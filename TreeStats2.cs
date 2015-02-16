@@ -402,7 +402,7 @@ namespace TreeStats2
 
                 // Attributes
 
-                json += "\"attributes\":{";
+                json += "\"attribs\":{";
 
                 foreach (var attr in Core.CharacterFilter.Attributes)
                 {
