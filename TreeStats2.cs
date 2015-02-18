@@ -399,6 +399,7 @@ namespace TreeStats2
                 json += "\"birth\":\"" + cf.Birth + "\",";
                 json += "\"total_xp\":" + cf.TotalXP.ToString() + ",";
                 json += "\"unassigned_xp\":" + cf.UnassignedXP.ToString() + ",";
+                json += "\"skill_credits\":" + cf.SkillPoints.ToString() + ",";
 
                 // Attributes
 
