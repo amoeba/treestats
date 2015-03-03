@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TreeStats2
+namespace TreeStats
 {
     public static class Util
     {
