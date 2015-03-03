@@ -49,23 +49,6 @@ namespace TreeStats
         // http://pastebin.com/X05rYnYU
        //  http://www.virindi.net/repos/virindi_public/trunk/VirindiTankLootPlugins/VTClassic%20Shared/Constants.cs
 
-        internal enum CharProps
-        {
-            Species = 2,
-            Burden = 5,
-            Equipped_Slots = 0x0A,
-            Rare_ID = 0x11,
-            Value = 0x13,
-            Total_Pyreals = 0x14
-        }
-
-        // Quad props
-        /*
-         * /vt mexec getcharquadprop[1] = total regular xp
-/vt mexec getcharquadprop[2] = unassigned xp
-/vt mexec getcharquadprop[6] = total lum xp
-         */
-
         internal static void Init(CoreManager _core, PluginHost _host)
         {
             Logging.loggingState = false;
@@ -75,7 +58,9 @@ namespace TreeStats
             
             currentTitle = -1;
             titlesList = new List<Int32>();
+
             allegianceName = "";
+
             luminance_earned = -1;
             luminance_total = -1;
 
@@ -388,106 +373,6 @@ namespace TreeStats
             rankNames.Add("Lugian-8-Female", "Gigas");
             rankNames.Add("Lugian-9-Female", "Extas");
             rankNames.Add("Lugian-10-Female", "Tiatus");
-
-            
-            // Store names of CharacterPropertyData
-            characterPropertyData.Add(0xB5, "Chess Rank");
-            characterPropertyData.Add(0xC0, "Fishing Skill");
-
-            characterPropertyData.Add(0xCC, "Elemental Damage Bonus");
-
-            characterPropertyData.Add(0xDA, "Augmentation: Reinforcement of the Lugians");
-            characterPropertyData.Add(0xDB, "Augmentation: Bleeargh's Fortitude");
-            characterPropertyData.Add(0xDC, "Augmentation: Oswald's Enhancement");
-            characterPropertyData.Add(0xDD, "Augmentation: Siraluun's Blessing");
-            characterPropertyData.Add(0xDE, "Augmentation: Enduring Calm");
-            characterPropertyData.Add(0xDF, "Augmentation: Steadfast Will");
-            characterPropertyData.Add(0xE0, "Augmentation: Ciandra's Essence");
-            characterPropertyData.Add(0xE1, "Augmentation: Yoshi's Essence");
-            characterPropertyData.Add(0xE2, "Augmentation: Jibril's Essence");
-            characterPropertyData.Add(0xE3, "Augmentation: Celdiseth's Essence");
-            characterPropertyData.Add(0xE4, "Augmentation: Koga's Essence");
-            characterPropertyData.Add(0xE5, "Augmentation: Shadow of the Seventh Mule");
-            characterPropertyData.Add(0xE6, "Augmentation: Might of the Seventh Mule");
-            characterPropertyData.Add(0xE7, "Augmentation: Clutch of the Miser");
-            characterPropertyData.Add(0xE8, "Augmentation: Enduring Enchantment");
-            characterPropertyData.Add(0xE9, "Augmentation: Critical Protection");
-            characterPropertyData.Add(0xEA, "Augmentation: Quick Learner");
-            characterPropertyData.Add(0xEB, "Augmentation: Ciandra's Fortune");
-            characterPropertyData.Add(0xEC, "Augmentation: Charmed Smith");
-            characterPropertyData.Add(0xED, "Augmentation: Innate Renewal");
-            characterPropertyData.Add(0xEE, "Augmentation: Archmage's Endurance");
-            characterPropertyData.Add(0xF0, "Augmentation: Enchancement of the Blade ;Turner");
-            characterPropertyData.Add(0xF1, "Augmentation: Enchancement of the Arrow ;Turner");
-            characterPropertyData.Add(0xF2, "Augmentation: Enchancement of the Mace ;Turner");
-            characterPropertyData.Add(0xF3, "Augmentation: Caustic Enhancement");
-            characterPropertyData.Add(0xF4, "Augmentation: Fiery Enchancement");
-            characterPropertyData.Add(0xF5, "Augmentation: Icy Enchancement");
-            characterPropertyData.Add(0xF6, "Augmentation: Storm's Enhancement");
-            characterPropertyData.Add(0x300, "Augmentation: Master of the Steel Circle");
-            characterPropertyData.Add(0x302, "Augmentation: Master of the Four-Fold Path");
-            characterPropertyData.Add(0x310, "Augmentation: Iron Skin of the Invincible");
-
-            augmentationValues = new List<Int32>()
-            {
-                0xDA,0xDB,0xDC,0xDD,0xDE,0xDF,0xE0,0xE1,0xE2,0xE3,0xE4,0xE5,0xE6,0xE7,0xE8,
-                0xE9,0xEA,0xEB,0xEC,0xED,0xEE,0xF0,0xF1,0xF2,0xF3,0xF4,0xF5,0xF6,0x300,0x302,0x310
-            };
-
-            auraValues = new List<Int32>()
-            {
-                0x00
-            };
-
-            ratingValues = new List<Int32>()
-            {
-                0x00
-            };
- 
-
-
-            //getcharintprop: Var 243	Acid Resist
-//getcharintprop: Var 244- 2"	Fire Resist
-//getcharintprop: Var 245	Lightning Resist
-//getcharintprop: Var 246	Pierce Resist
-            // 287 is the number of ribbons turned in to society (1001 is master)
-
-            // Ratings
-            /*
-             * Full list from the wiki (+My codes)
-             * Damage (370)
-             * Critical Damage (374)
-             * Damage Resistance (371)
-             * Critical Damage Resistance (375)
-             * Damage over Time Resistance
-             * Health Drain Resistance
-             * Healing Boost
-             * Aetheria Surge
-             * Manage Charge
-             * Mana Reduction
-             * Damage Reduction
-             * Healing Reduction (376)
-             * Damage Resistance Reduction
-             * Vitality (379)
-             */ 
-            characterPropertyData.Add(370, "Rating: Damage");
-            characterPropertyData.Add(371, "Rating: Damage Resistance");
-            characterPropertyData.Add(372, "Rating: Critical");
-            characterPropertyData.Add(373, "Rating: Crit Resist");
-            characterPropertyData.Add(374, "Rating: Critical Damage");
-            characterPropertyData.Add(375, "Rating: Critical Damage Resistance");
-            characterPropertyData.Add(376, "Rating: Heal Boost");
-            characterPropertyData.Add(379, "Rating: Vitality");
-
-            // Missing DoT Resist
-            // Health Drain Resist
-            // Aetheria Surge Rating
-            // Mana Charge Rating
-            // Mana Reduction
-            // Healing Reduction
-
-
-            characterPropertyData.Add(353, "Weapon Master Category");
         }
 
 
@@ -725,8 +610,6 @@ namespace TreeStats
  
                 if(characterProperties.Count > 0)
                 {
-                    Logging.LogMessage("Adding characterProperties to message");
-
                     json += "\"properties\":{";
 
                     foreach (var kvp in characterProperties)
@@ -735,27 +618,8 @@ namespace TreeStats
                     }
 
                     json = json.Remove(json.Length - 1);
-
                     json += "},";
                 }
-
-                // XP Augmentations
-
-                //foreach (var kvp in characterProperties)
-                //{
-                //    // Check what it is
-                //    if(augmentationValues.Exists(v => v ==  kvp.Key))
-                //    {
-                //        Logging.LogMessage("key: " + kvp.Key + " is in aug list");
-
-                //    }
-                //}
-
-                // Lum Augs (Auras)
-
-                // Ratings
-
-
 
                 // Remove final trailing comma
                 json = json.Remove(json.Length - 1);
@@ -802,8 +666,6 @@ namespace TreeStats
         {
             try
             {
-                Logging.LogMessage("---------- AUGMENTIONS ---------- ");
-
                 MessageStruct props = e.Message.Struct("properties");
                 MessageStruct dwords = props.Struct("dwords");
                 MessageStruct qwords = props.Struct("qwords");
@@ -845,8 +707,6 @@ namespace TreeStats
                         luminance_total = qwordValue;
                     }
                 }
-               
-                Logging.LogMessage("---------- AUGMENTIONS ---------- ");
             }
             catch (Exception ex)
             {
