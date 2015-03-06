@@ -41,6 +41,8 @@ namespace TreeStats
         {
             try
             {
+                TreeStats.Destroy();
+
                 // Unbind events
                 Core.CharacterFilter.LoginComplete -= new EventHandler(CharacterFilter_LoginComplete);
                 Core.EchoFilter.ServerDispatch -=new EventHandler<NetworkMessageEventArgs>(EchoFilter_ServerDispatch);
