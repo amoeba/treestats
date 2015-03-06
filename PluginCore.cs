@@ -17,7 +17,7 @@ namespace TreeStats
             try
             {
                 // Plugin setup
-                TreeStats2.Init(Core, Host);
+                TreeStats.Init(Core, Host);
                 Settings.Init(Path.ToString() + "\\settings.txt");
                 Logging.Init(Path.ToString() + "\\messages.txt", Path.ToString() + "\\errors.txt");
 
@@ -126,15 +126,15 @@ namespace TreeStats
             {
                 if ((int)e.Message["event"] == 0x0029) // Titles list
                 {
-                    TreeStats2.ProcessTitlesMessage(e);
+                    TreeStats.ProcessTitlesMessage(e);
                 }
                 else if ((int)e.Message["event"] == 0x0013) // Augmentation info
                 {
-                    TreeStats2.ProcessAugmentationsMessage(e);
+                    TreeStats.ProcessCharacterPropertyData(e);
                 }
                 else if ((int)e.Message["event"] == 0x0020) // Allegiance info
                 {
-                    TreeStats2.ProcessAllegianceInfoMessage(e);
+                    TreeStats.ProcessAllegianceInfoMessage(e);
                 }
             }
         }
