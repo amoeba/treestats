@@ -50,7 +50,7 @@ namespace TreeStats
 
         internal static void Init(CoreManager _core, PluginHost _host)
         {
-            Logging.loggingState = false;
+            Logging.loggingState = true;
 
             Core = _core;
             Host = _host;
