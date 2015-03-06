@@ -67,6 +67,13 @@ namespace TreeStats
             // Store all returned character properties from the Login Player event
             characterProperties = new Dictionary<Int32, Int32>();
 
+            // A list of dwords we know we don't want to save
+            dwordBlacklist = new List<Int32>()
+            {
+                 2,5,7,10,17,19,20,24,25,26,28,30,33,35,36,38,43,45,86,87,88,89,90,91,
+                 92,98,105,106,107,108,109,110,111,113,114,115,117,125,129,131,134,158,
+                 159,160,166,170,171,172,174,175,176177,178,179,188,193,270,271,272,293
+            };
         }
 
 
