@@ -8,13 +8,12 @@ namespace TreeStats
         {
             try
             {
-                TreeStats2.Host.Actions.AddChatText("[TreeStats2] " + message, 1);
+                TreeStats.Host.Actions.AddChatText("[TreeStats] " + message, 1);
             }
             catch (Exception ex)
             {
                 Logging.LogError(ex);
             }
         }
-
     }
 }
