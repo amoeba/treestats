@@ -10,6 +10,8 @@ namespace TreeStats
     [FriendlyName("TreeStats")]
     public class PluginCore : PluginBase
     {
+        public static bool isLoggedIn;
+
         protected override void Startup()
         {
             try
