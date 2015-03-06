@@ -15,6 +15,10 @@ namespace TreeStats
         public static CoreManager Core { get; set; }
         public static PluginHost Host { get; set; }
 
+
+        // Throttle sending to once per minute
+        public static DateTime lastSend;
+
         // Make an area to store information
         // These are stored for later because we get some of
         // this information before we login and are ready to 
@@ -123,6 +127,7 @@ namespace TreeStats
                 json += "\"unassigned_xp\":" + cf.UnassignedXP.ToString() + ",";
                 json += "\"skill_credits\":" + cf.SkillPoints.ToString() + ",";
                 
+
                 // Luminance XP
 
                 if (luminance_earned != -1)
@@ -375,14 +380,28 @@ namespace TreeStats
         {
             try
             {
+                if(lastSend != null)
+                {
+                    TimeSpan diff = DateTime.Now - lastSend;
+
+                    if (diff.Minutes <= 1)
+                    {
+                        Util.WriteToChat("Failed to send character: Please wait at least one minute after your last update to send this character again. Thanks.");
+                        return;
+                    }
+                }
+
+                // If we got this far, we can send. Update last send DateTime and send
+                lastSend = DateTime.Now;
+
                 Util.WriteToChat("Sending character update.");
                 
+                // Do the sending
                 Uri endpoint = new Uri("http://floating-meadow-8649.herokuapp.com/");
   
                 using (var client = new WebClient())
                 {
                     client.UploadStringAsync(endpoint, "POST", message);
-                   
                 }
             }
             catch (Exception ex)
