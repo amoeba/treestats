@@ -128,7 +128,7 @@ namespace TreeStats
                 {
                     TreeStats.ProcessTitlesMessage(e);
                 }
-                else if ((int)e.Message["event"] == 0x0013) // Augmentation info
+                else if ((int)e.Message["event"] == 0x0013) // Login Character
                 {
                     TreeStats.ProcessCharacterPropertyData(e);
                 }
