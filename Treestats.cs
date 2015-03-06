@@ -76,6 +76,14 @@ namespace TreeStats
             };
         }
 
+        internal static void Destroy()
+        {
+            characterProperties.Clear();
+            characterProperties = null;
+            
+            dwordBlacklist.Clear();
+            dwordBlacklist = null;
+        }
 
         /*  
          * Get player information
@@ -109,7 +117,6 @@ namespace TreeStats
                     return;
                 }
 
-                }
 
                 // General attributes
                 json += "\"version\":\"1\",";
