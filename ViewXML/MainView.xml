@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<view icon="4987" title="TreeStats" width="200" height="300">
+		<control progid="DecalControls.FixedLayout" clipped="">
+			<control progid="DecalControls.PushButton" name="bSendUpdate" left="20" top="20" width="100" height="30" text="Send Update"/>
+		</control>
+</view>
