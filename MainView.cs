@@ -30,6 +30,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Decal.Adapter.Wrappers;
+
 namespace TreeStats
 {
     internal static class MainView
@@ -57,7 +59,7 @@ namespace TreeStats
 
         static void bSendUpdate_Hit(object sender, EventArgs e)
         {
-            TreeStats.Character.DoUpdate();
+            Character.DoUpdate();
         }
     }
 }

@@ -13,8 +13,8 @@ namespace TreeStats
 {
     public static class Character
     {
-        public static CoreManager Core { get; set; }
-        public static PluginHost Host { get; set; }
+        public static CoreManager MyCore { get; set; }
+        public static PluginHost MyHost { get; set; }
 
 
         // Throttle sending to once per minute
@@ -52,12 +52,12 @@ namespace TreeStats
         // http://pastebin.com/X05rYnYU
         // http://www.virindi.net/repos/virindi_public/trunk/VirindiTankLootPlugins/VTClassic%20Shared/Constants.cs
 
-        internal static void Init(CoreManager _core, PluginHost _host)
+        internal static void Init(CoreManager core, PluginHost host)
         {
             Logging.loggingState = true;
 
-            Core = _core;
-            Host = _host;
+            MyCore = core;
+            MyHost = host;
 
             lastMessage = null;
 
@@ -120,7 +120,7 @@ namespace TreeStats
                 string json = "{";
 
                 // Declare the fileservice for later use
-                Decal.Adapter.Wrappers.CharacterFilter cf = Core.CharacterFilter;
+                Decal.Adapter.Wrappers.CharacterFilter cf = MyCore.CharacterFilter;
                 Decal.Filters.FileService fs = CoreManager.Current.FileService as Decal.Filters.FileService;
 
                 // Update character and server for later
@@ -173,7 +173,7 @@ namespace TreeStats
                 // Attributes
                 json += "\"attribs\":{";
 
-                foreach (var attr in Core.CharacterFilter.Attributes)
+                foreach (var attr in MyCore.CharacterFilter.Attributes)
                 {
                     json += "\"" + attr.Name.ToLower() + "\":{\"name\":\"" + attr.Name + "\",\"base\":" + attr.Base.ToString() + ",\"creation\":" + attr.Creation.ToString() + "},";
                    
@@ -186,7 +186,7 @@ namespace TreeStats
                 // Vitals
                 json += "\"vitals\":{";
 
-                foreach (var vital in Core.CharacterFilter.Vitals)
+                foreach (var vital in MyCore.CharacterFilter.Vitals)
                 {
                     json += "\"" + vital.Name.ToLower() + "\":{\"name\":\"" + vital.Name + "\",\"base\":" + vital.Base.ToString() + "},";
                 }
@@ -205,7 +205,7 @@ namespace TreeStats
                 {
                     try
                     {
-                        skillinfo = Core.CharacterFilter.Underlying.get_Skill((Decal.Interop.Filters.eSkillID)fs.SkillTable[i].Id);
+                        skillinfo = MyCore.CharacterFilter.Underlying.get_Skill((Decal.Interop.Filters.eSkillID)fs.SkillTable[i].Id);
                         string name = skillinfo.Name.ToLower().Replace(" ", "_");
                         skill_text += name + "&" + skillinfo.Training.ToString() + "&" + skillinfo.Base.ToString() + "#";
                         json += "\""+ name + "\":{\"name\":\"" + name + "\",\"base\":" + skillinfo.Base + ",\"training\":\"" + skillinfo.Training.ToString().Substring(6) + "\"},";
@@ -428,8 +428,6 @@ namespace TreeStats
                 //        return;
                 //    }
                 //}
-
-                Logging.LogMessage(message);
 
                 // If we got this far, we can send. Update last send DateTime and send
                 lastSend = DateTime.Now;

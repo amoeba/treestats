@@ -25,6 +25,12 @@ namespace TreeStats
             trackedCharacters = new List<string>();
         }
 
+        internal static void Destroy()
+        {
+            trackedCharacters.Clear();
+            trackedCharacters = null;
+        }
+
         internal static void Save()
         {
             System.IO.StreamWriter sw = new System.IO.StreamWriter(settingsFile, false);
