@@ -30,14 +30,22 @@ namespace TreeStats
 
         internal static void LogMessage(string message)
         {
-            if (loggingState == false)
+            try
             {
-                return;
-            }
 
-            System.IO.StreamWriter sw = new System.IO.StreamWriter(messagesFile, true);
-            sw.WriteLine("[" + DateTime.Now.ToString() + "] " + message);
-            sw.Close();
+                if (loggingState == false)
+                {
+                    return;
+                }
+
+                System.IO.StreamWriter sw = new System.IO.StreamWriter(messagesFile, true);
+                sw.WriteLine("[" + DateTime.Now.ToString() + "] " + message);
+                sw.Close();
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
+            }
         }
 
         internal static void LogError(Exception ex)

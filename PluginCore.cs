@@ -62,9 +62,17 @@ namespace TreeStats
 
         void CharacterFilter_LoginComplete(object sender, EventArgs e)
         {
-            if (Settings.ShouldSend(Core.CharacterFilter.Server + "-" + Core.CharacterFilter.Name))
+            try
             {
-                Character.DoUpdate();
+
+                if (Settings.ShouldSend(Core.CharacterFilter.Server + "-" + Core.CharacterFilter.Name))
+                {
+                    Character.DoUpdate();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
             }
         }
 
@@ -128,20 +136,28 @@ namespace TreeStats
 
         void EchoFilter_ServerDispatch(object sender, NetworkMessageEventArgs e)
         {
-            if (e.Message.Type == 0xF7B0) // Game Event
+            try
             {
-                if ((int)e.Message["event"] == 0x0029) // Titles list
+                if (e.Message.Type == 0xF7B0) // Game Event
                 {
-                    Character.ProcessTitlesMessage(e);
+                    if ((int)e.Message["event"] == 0x0029) // Titles list
+                    {
+                        Character.ProcessTitlesMessage(e);
+                    }
+                    else if ((int)e.Message["event"] == 0x0013) // Login Character
+                    {
+                        Character.ProcessCharacterPropertyData(e);
+                    }
+                    else if ((int)e.Message["event"] == 0x0020) // Allegiance info
+                    {
+                        Character.ProcessAllegianceInfoMessage(e);
+                    }
                 }
-                else if ((int)e.Message["event"] == 0x0013) // Login Character
-                {
-                    Character.ProcessCharacterPropertyData(e);
-                }
-                else if ((int)e.Message["event"] == 0x0020) // Allegiance info
-                {
-                    Character.ProcessAllegianceInfoMessage(e);
-                }
+
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
             }
         }
     }

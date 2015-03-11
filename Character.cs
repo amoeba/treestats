@@ -16,7 +16,6 @@ namespace TreeStats
         public static CoreManager MyCore { get; set; }
         public static PluginHost MyHost { get; set; }
 
-
         // Throttle sending to once per minute
         public static DateTime lastSend;
 
@@ -54,49 +53,72 @@ namespace TreeStats
 
         internal static void Init(CoreManager core, PluginHost host)
         {
-            Logging.loggingState = true;
-
-            MyCore = core;
-            MyHost = host;
-
-            lastMessage = null;
-
-            // General character info
-            currentTitle = -1;
-            titlesList = new List<Int32>();
-
-            allegianceName = "";
-
-            luminance_earned = -1;
-            luminance_total = -1;
-
-            // Store all returned character properties from the Login Player event
-            characterProperties = new Dictionary<Int32, Int32>();
-
-            // A list of dwords we know we don't want to save
-            dwordBlacklist = new List<Int32>()
+            try
             {
-                 2,5,7,10,17,19,20,24,25,26,28,30,33,35,36,38,43,45,86,87,88,89,90,91,
-                 92,98,105,106,107,108,109,110,111,113,114,115,117,125,129,131,134,158,
-                 159,160,166,170,171,172,174,175,176177,178,179,188,193,270,271,272,293
-            };
+                Logging.loggingState = true;
+
+                MyCore = core;
+                MyHost = host;
+
+                lastMessage = null;
+
+                // General character info
+                currentTitle = -1;
+                titlesList = new List<Int32>();
+
+                allegianceName = "";
+
+                luminance_earned = -1;
+                luminance_total = -1;
+
+                // Store all returned character properties from the Login Player event
+                characterProperties = new Dictionary<Int32, Int32>();
+
+                // A list of dwords we know we don't want to save
+                dwordBlacklist = new List<Int32>()
+                {
+                     2,5,7,10,17,19,20,24,25,26,28,30,33,35,36,38,43,45,86,87,88,89,90,91,
+                     92,98,105,106,107,108,109,110,111,113,114,115,117,125,129,131,134,158,
+                     159,160,166,170,171,172,174,175,176177,178,179,188,193,270,271,272,293
+                };
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
+            }
         }
 
         internal static void Destroy()
         {
-            lastMessage = null;
+            try
+            {
 
-            characterProperties.Clear();
-            characterProperties = null;
-            
-            dwordBlacklist.Clear();
-            dwordBlacklist = null;
+                lastMessage = null;
+
+                characterProperties.Clear();
+                characterProperties = null;
+
+                dwordBlacklist.Clear();
+                dwordBlacklist = null;
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
+            }
         }
 
         internal static void DoUpdate()
         {
-            GetCharacterInfo();
-            SendCharacterInfo(lastMessage);
+            try
+            {
+
+                GetCharacterInfo();
+                SendCharacterInfo(lastMessage);
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
+            }
         }
 
         /* GetPlayerInfo()
@@ -315,24 +337,32 @@ namespace TreeStats
 
         internal static void ProcessTitlesMessage(NetworkMessageEventArgs e)
         {
-            // Save current title
-            currentTitle = e.Message.Value<Int32>("current");
-            
-            MessageStruct titles = e.Message.Struct("titles");
-
-            for (int i = 0; i < titles.Count; i++)
+            try
             {
-                // Add title to list
 
-                // Check if exists first so multiple firings of the event don't make 
-                // duplicate titles
+                // Save current title
+                currentTitle = e.Message.Value<Int32>("current");
 
-                Int32 titleId = titles.Struct(i).Value<Int32>("title");
+                MessageStruct titles = e.Message.Struct("titles");
 
-                if (!titlesList.Contains(titleId))
+                for (int i = 0; i < titles.Count; i++)
                 {
-                    titlesList.Add(titleId);
+                    // Add title to list
+
+                    // Check if exists first so multiple firings of the event don't make 
+                    // duplicate titles
+
+                    Int32 titleId = titles.Struct(i).Value<Int32>("title");
+
+                    if (!titlesList.Contains(titleId))
+                    {
+                        titlesList.Add(titleId);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
             }
         }
 
@@ -405,12 +435,20 @@ namespace TreeStats
 
         internal static void ProcessSetTitleMessage(NetworkMessageEventArgs e)
         {
-            Int32 title = e.Message.Value<Int32>("title");
-            bool active = e.Message.Value<bool>("active");
-
-            if (active)
+            try
             {
-                currentTitle = title;
+
+                Int32 title = e.Message.Value<Int32>("title");
+                bool active = e.Message.Value<bool>("active");
+
+                if (active)
+                {
+                    currentTitle = title;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
             }
         }
 
