@@ -438,8 +438,12 @@ namespace TreeStats
             try
             {
 
+                Logging.LogMessage("ProcessSetTitleMessage");
+
                 Int32 title = e.Message.Value<Int32>("title");
                 bool active = e.Message.Value<bool>("active");
+
+                Logging.LogMessage("Title: " + title.ToString() + ", Active: " + active.ToString());
 
                 if (active)
                 {
@@ -480,13 +484,17 @@ namespace TreeStats
                     client.UploadStringCompleted += (s, e) =>
                     {
                         if (e.Error != null)
+                        {
                             Logging.LogError(e.Error);
+                            Util.WriteToChat("Upload Error: " + e.Error.Message);
+                        }
                         else
+                        {
                             Util.WriteToChat(e.Result);
+                        }
                     };
 
                     client.UploadStringAsync(endpoint, "POST", message);
-                    
                 }
             }
             catch (Exception ex)

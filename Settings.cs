@@ -21,6 +21,7 @@ namespace TreeStats
         {
             try
             {
+                Logging.LogMessage("Settings::Init()");
 
                 settingsFile = _settingsFileName;
 
@@ -43,6 +44,7 @@ namespace TreeStats
         {
             try
             {
+                Logging.LogMessage("Settings::Save()");
 
                 System.IO.StreamWriter sw = new System.IO.StreamWriter(settingsFile, false);
 
@@ -75,10 +77,16 @@ namespace TreeStats
         {
             try
             {
+                Logging.LogMessage("Load()"); 
+                
                 if (!File.Exists(settingsFile))
                 {
+                    Logging.LogMessage("  settings file doesn't exist");
                     return;
                 }
+
+                
+                Logging.LogMessage("  settingsFile exists");
 
                 System.IO.StreamReader sr = new System.IO.StreamReader(settingsFile, true);
 
@@ -88,6 +96,8 @@ namespace TreeStats
 
                 while (!sr.EndOfStream)
                 {
+                    Logging.LogMessage("  Reading line " + i.ToString());
+
                     switch (i)
                     {
                         case 0: // Line 1 is auto mode setting, True | False

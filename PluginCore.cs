@@ -71,9 +71,16 @@ namespace TreeStats
         {
             try
             {
+                Logging.LogMessage("LoginComplete");
+                Logging.LogMessage("  Server:" + Core.CharacterFilter.Server);
+                Logging.LogMessage("  Character: " + Core.CharacterFilter.Name);
+
+                Logging.LogMessage("  ShouldSend() : " + Settings.ShouldSend(Core.CharacterFilter.Server + "-" + Core.CharacterFilter.Name).ToString());
 
                 if (Settings.ShouldSend(Core.CharacterFilter.Server + "-" + Core.CharacterFilter.Name))
                 {
+                    Logging.LogMessage("Character.DoUpdate()");
+
                     Character.DoUpdate();
                 }
             }
