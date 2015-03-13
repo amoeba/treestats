@@ -152,6 +152,10 @@ namespace TreeStats
                     {
                         Character.ProcessAllegianceInfoMessage(e);
                     }
+                    else if ((int)e.Message["event"] == 0x002b) // Set title
+                    {
+                        Character.ProcessSetTitleMessage(e);
+                    }
                 }
 
             }
