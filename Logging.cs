@@ -6,7 +6,7 @@ using System.IO;
 using Decal.Adapter;
 using Decal.Adapter.Wrappers;
 
-// This function is very lightly modified from Virindi
+// This function is very lightly modified from Virindi (virindi.net)
 
 namespace TreeStats
 {
