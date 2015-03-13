@@ -39,14 +39,25 @@ namespace TreeStats
         #region Auto-generated view code
         static MyClasses.MetaViewWrappers.IView View;
         static MyClasses.MetaViewWrappers.IButton bSendUpdate;
+        static MyClasses.MetaViewWrappers.ICheckBox chkAutoMode;
 
         public static void ViewInit()
         {
+            Logging.LogMessage("ViewInit()");
+
             //Create view here
             View = MyClasses.MetaViewWrappers.ViewSystemSelector.CreateViewResource(PluginCore.MyHost, "TreeStats.ViewXML.MainView.xml");
-            
+
             bSendUpdate = (MyClasses.MetaViewWrappers.IButton)View["bSendUpdate"];
             bSendUpdate.Hit += new EventHandler(bSendUpdate_Hit);
+
+            chkAutoMode = (MyClasses.MetaViewWrappers.ICheckBox)View["chkAutoMode"];
+            chkAutoMode.Change += new EventHandler<MyClasses.MetaViewWrappers.MVCheckBoxChangeEventArgs>(chkAutoMode_Change);
+
+            if (Settings.autoMode == true)
+            {
+                chkAutoMode.Checked = true;
+            }
         }
 
         public static void ViewDestroy()
@@ -60,6 +71,20 @@ namespace TreeStats
         static void bSendUpdate_Hit(object sender, EventArgs e)
         {
             Character.DoUpdate();
+        }
+        
+        static void chkAutoMode_Change(object sender, MyClasses.MetaViewWrappers.MVCheckBoxChangeEventArgs e)
+        {
+            if (e.Checked)
+            {
+                Settings.autoMode = true;
+                Settings.Save();
+            }
+            else
+            {
+                Settings.autoMode = false;
+                Settings.Save();
+            }
         }
     }
 }
