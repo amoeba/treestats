@@ -16,16 +16,20 @@ namespace TreeStats
         {
             try
             {
+                Logging.Init(Path.ToString() + "\\messages.txt", Path.ToString() + "\\errors.txt");
+
                 MyHost = Host;
 
                 // Plugin setup
                 Character.Init(Core, MyHost);
                 Settings.Init(Path.ToString() + "\\settings.txt");
-                Logging.Init(Path.ToString() + "\\messages.txt", Path.ToString() + "\\errors.txt");
                 Util.Init(MyHost);
 
                 // Load settings
                 Settings.Load();
+
+                // Load View
+                MainView.ViewInit();
 
                 // Bind events
                 Core.CharacterFilter.LoginComplete += new EventHandler(CharacterFilter_LoginComplete);
@@ -45,14 +49,17 @@ namespace TreeStats
                 MyHost = null;
 
                 Character.Destroy();
-                Settings.Destroy();
-                Logging.Destroy();
                 Util.Destroy();
+                Settings.Destroy();
+
+                MainView.ViewDestroy();
 
                 // Unbind events
                 Core.CharacterFilter.LoginComplete -= new EventHandler(CharacterFilter_LoginComplete);
                 Core.EchoFilter.ServerDispatch -= new EventHandler<NetworkMessageEventArgs>(EchoFilter_ServerDispatch);
                 Core.CommandLineText -= new EventHandler<ChatParserInterceptEventArgs>(Core_CommandLineText);
+                
+                Logging.Destroy();
             }
             catch (Exception ex)
             {
