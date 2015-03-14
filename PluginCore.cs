@@ -49,6 +49,7 @@ namespace TreeStats
             try
             {
                 MyHost = null;
+                MyCore = null;
 
                 Character.Destroy();
                 Util.Destroy();
