@@ -3,9 +3,9 @@ task :default, :deploy
 desc "Deploy to GitHub"
 task :deploy do
   puts '>> Checking for unstaged changes'
-  continue = `git diff --exit-code`
-  
-  if continue != 0
+  continue = system("git diff --exit-code")
+
+  if !continue
     puts ">> Unstaged changes found. Exiting"
     exit
   end
