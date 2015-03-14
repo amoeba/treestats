@@ -16,7 +16,6 @@ namespace TreeStats
         public static bool autoMode;
         public static List<string> trackedCharacters;
 
-
         internal static void Init(string _settingsFileName)
         {
             try
@@ -51,6 +50,8 @@ namespace TreeStats
                 // Write auto mode
                 sw.WriteLine("auto:" + autoMode.ToString());
 
+                Logging.LogMessage("trackedCharacters.Count is " + trackedCharacters.Count.ToString());
+
                 if (trackedCharacters.Count > 0)
                 {
                     // Write character list
@@ -83,6 +84,7 @@ namespace TreeStats
                 if (!File.Exists(settingsFile))
                 {
                     Logging.LogMessage("  settings file doesn't exist");
+
                     return;
                 }
 
@@ -155,13 +157,11 @@ namespace TreeStats
                 if (autoMode == true)
                 {
                     Util.WriteToChat("Setting mode to manual. You must now either use @treestats send or @treestats add to send characters.");
-
                     autoMode = false;
                 }
                 else
                 {
                     Util.WriteToChat("Setting mode to automatic. Any characters you log into will be sent automatically.");
-
                     autoMode = true;
                 }
             }
@@ -230,7 +230,6 @@ namespace TreeStats
         {
             try
             {
-
                 return Settings.autoMode || Settings.trackedCharacters.Exists(k => k == key);
             }
             catch (Exception ex)
