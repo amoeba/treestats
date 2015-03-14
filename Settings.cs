@@ -129,7 +129,7 @@ namespace TreeStats
                             {
                                 if (key.Length > 0)
                                 {
-                                    AddChar(key);
+                                    AddCharacter(key);
                                 }
                             }
 
@@ -171,15 +171,25 @@ namespace TreeStats
             }
         }
 
-        internal static void AddChar(string key)
+        internal static void AddCharacter(string key)
         {
             try
             {
-                Util.WriteToChat("Now tracking " + key);
-
                 if (!trackedCharacters.Exists(k => k == key))
                 {
+                    Util.WriteToChat("Now tracking " + key);
                     trackedCharacters.Add(key);
+                }
+                else
+                {
+                    Util.WriteToChat("Already tracking " + key);
+                }
+
+                Logging.LogMessage("Dumping trackedCharacters");
+
+                foreach(var k in trackedCharacters)
+                {
+                    Logging.LogMessage("    " + k);
                 }
             }
             catch (Exception ex)
@@ -188,15 +198,26 @@ namespace TreeStats
             }
         }
 
-        internal static void RemoveChar(string key)
+        internal static void RemoveCharacter(string key)
         {
             try
             {
-                if(trackedCharacters.Exists(k => k == key))
+                if (trackedCharacters.Exists(k => k == key))
                 {
                     Util.WriteToChat("No longer tracking " + key);
 
                     trackedCharacters.Remove(key);
+                }
+                else
+                {
+                    Util.WriteToChat("Not already tracking " + key);
+                }
+
+                Logging.LogMessage("Dumping trackedCharacters");
+
+                foreach(var k in trackedCharacters)
+                {
+                    Logging.LogMessage("    " + k);
                 }
             }
             catch (Exception ex)

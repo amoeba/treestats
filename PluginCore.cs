@@ -132,14 +132,14 @@ namespace TreeStats
                         {
                             Util.WriteToChat("add command");
 
-                            Settings.AddChar(Core.CharacterFilter.Server + "-" + Core.CharacterFilter.Name);
+                            Settings.AddCharacter(Core.CharacterFilter.Server + "-" + Core.CharacterFilter.Name);
                             Settings.Save();
                         }
                         else if (command == "rem")
                         {
                             Util.WriteToChat("rem command");
 
-                            Settings.RemoveChar(Core.CharacterFilter.Server + "-" + Core.CharacterFilter.Name);
+                            Settings.RemoveCharacter(Core.CharacterFilter.Server + "-" + Core.CharacterFilter.Name);
                             Settings.Save();
                         }
                     }
