@@ -1,32 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////////
-//File: MainView.cs
-//
-//Description: An example plugin using the VVS MetaViewWrappers. When VVS is
-//  enabled, the plugin's view appears under the VVS bar. Otherwise, it appears
-//  in the regular Decal bar.
-//
-//This file is Copyright (c) 2009 VirindiPlugins
-//
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to deal
-//  in the Software without restriction, including without limitation the rights
-//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//  copies of the Software, and to permit persons to whom the Software is
-//  furnished to do so, subject to the following conditions:
-//
-//The above copyright notice and this permission notice shall be included in
-//  all copies or substantial portions of the Software.
-//
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//  THE SOFTWARE.
-///////////////////////////////////////////////////////////////////////////////
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -36,10 +8,11 @@ namespace TreeStats
 {
     internal static class MainView
     {
-        #region Auto-generated view code
         static MyClasses.MetaViewWrappers.IView View;
-        static MyClasses.MetaViewWrappers.IButton bSendUpdate;
+        static MyClasses.MetaViewWrappers.IButton btnSendUpdate;
         static MyClasses.MetaViewWrappers.ICheckBox chkAutoMode;
+        static MyClasses.MetaViewWrappers.IButton btnAddCharacter;
+        static MyClasses.MetaViewWrappers.IButton btnRemoveCharacter;
 
         public static void ViewInit()
         {
@@ -48,11 +21,17 @@ namespace TreeStats
             //Create view here
             View = MyClasses.MetaViewWrappers.ViewSystemSelector.CreateViewResource(PluginCore.MyHost, "TreeStats.ViewXML.MainView.xml");
 
-            bSendUpdate = (MyClasses.MetaViewWrappers.IButton)View["bSendUpdate"];
-            bSendUpdate.Hit += new EventHandler(bSendUpdate_Hit);
+            btnSendUpdate = (MyClasses.MetaViewWrappers.IButton)View["btnSendUpdate"];
+            btnSendUpdate.Hit += new EventHandler(btnSendUpdate_Hit);
 
             chkAutoMode = (MyClasses.MetaViewWrappers.ICheckBox)View["chkAutoMode"];
             chkAutoMode.Change += new EventHandler<MyClasses.MetaViewWrappers.MVCheckBoxChangeEventArgs>(chkAutoMode_Change);
+
+            btnAddCharacter = (MyClasses.MetaViewWrappers.IButton)View["btnAddCharacter"];
+            btnAddCharacter.Hit += new EventHandler(btnAddCharacter_Hit);
+
+            btnRemoveCharacter = (MyClasses.MetaViewWrappers.IButton)View["btnRemoveCharacter"];
+            btnRemoveCharacter.Hit += new EventHandler(btnRemoveCharacter_Hit);
 
             if (Settings.autoMode == true)
             {
@@ -62,13 +41,12 @@ namespace TreeStats
 
         public static void ViewDestroy()
         {
-            bSendUpdate = null;
+            btnSendUpdate = null;
 
             View.Dispose();
         }
-        #endregion Auto-generated view code
 
-        static void bSendUpdate_Hit(object sender, EventArgs e)
+        static void btnSendUpdate_Hit(object sender, EventArgs e)
         {
             Character.DoUpdate();
         }
@@ -85,6 +63,18 @@ namespace TreeStats
                 Settings.autoMode = false;
                 Settings.Save();
             }
+        }
+
+        static void btnAddCharacter_Hit(object sender, EventArgs e)
+        {
+            Settings.AddCharacter(PluginCore.MyCore.CharacterFilter.Server + "-" + PluginCore.MyCore.CharacterFilter.Name);
+            Settings.Save();
+        }
+
+        static void btnRemoveCharacter_Hit(object sender, EventArgs e)
+        {
+            Settings.RemoveCharacter(PluginCore.MyCore.CharacterFilter.Server + "-" + PluginCore.MyCore.CharacterFilter.Name);
+            Settings.Save();
         }
     }
 }
