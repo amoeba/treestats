@@ -253,7 +253,10 @@ namespace TreeStats
 
                 try
                 {
-                    json += "\"monarch\":{\"name\":\"" + cf.Monarch.Name + "\",\"race\":" + cf.Monarch.Race + ",\"rank\":" + cf.Monarch.Rank + ",\"gender\":" + cf.Monarch.Gender + ",\"followers\":" + cf.MonarchFollowers + "},";
+                    if (cf.Monarch != null)
+                    {
+                        json += "\"monarch\":{\"name\":\"" + cf.Monarch.Name + "\",\"race\":" + cf.Monarch.Race + ",\"rank\":" + cf.Monarch.Rank + ",\"gender\":" + cf.Monarch.Gender + ",\"followers\":" + cf.MonarchFollowers + "},";
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -262,7 +265,10 @@ namespace TreeStats
 
                 try
                 {
-                    json += "\"patron\":{\"name\":\"" + cf.Patron.Name + "\",\"race\":" + cf.Patron.Race + ",\"rank\":" + cf.Patron.Rank + ",\"gender\":" + cf.Patron.Gender + "},";
+                    if (cf.Patron != null)
+                    {
+                        json += "\"patron\":{\"name\":\"" + cf.Patron.Name + "\",\"race\":" + cf.Patron.Race + ",\"rank\":" + cf.Patron.Rank + ",\"gender\":" + cf.Patron.Gender + "},";
+                    }
                 }
                 catch (Exception ex)
                 {
