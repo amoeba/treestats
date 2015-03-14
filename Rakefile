@@ -2,6 +2,14 @@ task :default, :deploy
 
 desc "Deploy to GitHub"
 task :deploy do
+  puts '>> Checking for unstaged changes'
+  continue = `git diff --exit-code`
+  
+  if continue != 0
+    puts ">> Unstaged changes found. Exiting"
+    exit
+  end
+
   puts ">> git branch deploy"
   `git branch deploy`
   
