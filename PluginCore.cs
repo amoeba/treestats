@@ -11,6 +11,7 @@ namespace TreeStats
     public class PluginCore : PluginBase
     {
         public static PluginHost MyHost;
+        public static CoreManager MyCore;
 
         protected override void Startup()
         {
@@ -19,9 +20,10 @@ namespace TreeStats
                 Logging.Init(Path.ToString() + "\\messages.txt", Path.ToString() + "\\errors.txt");
 
                 MyHost = Host;
+                MyCore = Core;
 
                 // Plugin setup
-                Character.Init(Core, MyHost);
+                Character.Init(MyCore, MyHost);
                 Settings.Init(Path.ToString() + "\\settings.txt");
                 Util.Init(MyHost);
 
