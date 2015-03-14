@@ -61,7 +61,8 @@ namespace TreeStats
                         characters += key + "#";
                     }
 
-                    characters.Remove(characters.Length - 1); // Remove last #
+                    characters = characters.Remove(characters.Length - 1); // Remove last #
+
                     sw.WriteLine(characters);
                 }
 
