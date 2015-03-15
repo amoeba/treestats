@@ -341,9 +341,6 @@ namespace TreeStats
                 // Encrypt POST request
                 
                 lastMessage = Encryption.encrypt(req.ToString());
-
-                Logging.LogMessage(req.ToString());
-   
             }
             catch (Exception ex)
             {
