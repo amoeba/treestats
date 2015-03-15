@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 using Decal.Adapter.Wrappers;
 
@@ -48,6 +46,8 @@ namespace TreeStats
 
         static void btnSendUpdate_Hit(object sender, EventArgs e)
         {
+            Util.WriteToChat("btnSendUpdate_Hit");
+
             Character.DoUpdate();
         }
         

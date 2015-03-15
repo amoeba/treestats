@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Web;
-using System.IO;
-using System.Threading;
 
 using Decal.Adapter;
 using Decal.Adapter.Wrappers;
@@ -13,6 +11,8 @@ namespace TreeStats
 {
     public static class Character
     {
+        public const string TreestatsURL = "http://treestats.herokuapp.com/";
+
         public static CoreManager MyCore { get; set; }
         public static PluginHost MyHost { get; set; }
 
@@ -20,7 +20,8 @@ namespace TreeStats
         public static DateTime lastSend;
 
         // Store latest message 
-        public static string lastMessage;
+        public static string lastMessage = null;
+        public static StringBuilder req;
 
         // Make an area to store information
         // These are stored for later because we get some of
@@ -60,14 +61,10 @@ namespace TreeStats
                 MyCore = core;
                 MyHost = host;
 
-                lastMessage = null;
-
                 // General character info
                 currentTitle = -1;
                 titlesList = new List<Int32>();
-
                 allegianceName = "";
-
                 luminance_earned = -1;
                 luminance_total = -1;
 
@@ -92,7 +89,6 @@ namespace TreeStats
         {
             try
             {
-
                 lastMessage = null;
 
                 characterProperties.Clear();
@@ -111,7 +107,6 @@ namespace TreeStats
         {
             try
             {
-
                 GetCharacterInfo();
                 SendCharacterInfo(lastMessage);
             }
@@ -121,7 +116,8 @@ namespace TreeStats
             }
         }
 
-        /* GetPlayerInfo()
+
+        /* GetCharacterInfo()
          * Gets player information
          *  
          * This method builds a JSON request string which is later encrypted
@@ -138,8 +134,18 @@ namespace TreeStats
         {
             try
             {
+                if (MyCore.CharacterFilter.Name == null)
+                {
+                    return;
+                }
+
+                Util.WriteToChat("GetCharacterInfo");
+                Logging.LogMessage("GetCharacterInfo()");
+
+                req = new StringBuilder();
+
                 // One long string stores the entire POST request body
-                string json = "{";
+                req.Append("{");
 
                 // Declare the fileservice for later use
                 Decal.Adapter.Wrappers.CharacterFilter cf = MyCore.CharacterFilter;
@@ -149,88 +155,88 @@ namespace TreeStats
                 character = cf.Name;
                 server = cf.Server;
 
-                // Exit if we can't get Name and Server from CharacterFilter
-                if (character.Length <= 0 && server.Length <= 0)
-                {
-                    return;
-                }
-
-
                 // General attributes
-                json += "\"version\":\"1\",";
-                json += "\"name\":\"" + cf.Name + "\",";       
-                json += "\"race\":\"" + cf.Race + "\",";
-                json += "\"gender\":\"" + cf.Gender + "\",";
-                json += "\"level\":" + cf.Level + ",";
+                req.AppendFormat("\"version\":\"{0}\",", 1);
+                req.AppendFormat("\"name\":\"{0}\",", cf.Name);
+                req.AppendFormat("\"race\":\"{0}\",", cf.Race);
+                req.AppendFormat("\"gender\":\"{0}\",", cf.Gender);
+                req.AppendFormat("\"level\":{0},", cf.Level);
 
                 // Add allegiance name if we've gotten it in a message
                 if (allegianceName.Length > 0)
                 {
-                    json += "\"allegiance_name\":\"" + allegianceName + "\",";
+                    req.AppendFormat("\"allegiance_name\":\"{0}\",", allegianceName);
                 }
 
-                json += "\"rank\":" + cf.Rank + ",";
-                json += "\"followers\":" + cf.Followers.ToString() + ",";
-                json += "\"server\":\"" + cf.Server + "\",";
-                json += "\"server_population\":" + cf.ServerPopulation.ToString() + ",";
-                json += "\"deaths\":" + cf.Deaths.ToString() + ",";
-                json += "\"birth\":\"" + cf.Birth + "\",";
-                json += "\"total_xp\":" + cf.TotalXP.ToString() + ",";
-                json += "\"unassigned_xp\":" + cf.UnassignedXP.ToString() + ",";
-                json += "\"skill_credits\":" + cf.SkillPoints.ToString() + ",";
-                
+                req.AppendFormat("\"rank\":{0},", cf.Rank);
+                req.AppendFormat("\"followers\":{0},", cf.Followers);
+                req.AppendFormat("\"server\":\"{0}\",", cf.Server);
+                req.AppendFormat("\"server_population\":{0},", cf.ServerPopulation);
+                req.AppendFormat("\"deaths\":{0},", cf.Deaths);
+                req.AppendFormat("\"birth\":\"{0}\",", cf.Birth);
+                req.AppendFormat("\"total_xp\":{0},", cf.TotalXP);
+                req.AppendFormat("\"unassigned_xp\":{0},", cf.UnassignedXP);
+                req.AppendFormat("\"skill_credits\":{0},", cf.SkillPoints);
+
 
                 // Luminance XP
 
                 if (luminance_earned != -1)
                 {
-                    json += "\"luminance_earned\":" + luminance_earned.ToString() + ",";
+                    req.AppendFormat("\"luminance_earned\":{0},", luminance_earned);
                 }
 
                 if (luminance_total != -1)
                 {
-                    json += "\"luminance_total\":" + luminance_total.ToString() + ",";
+
+                    req.AppendFormat("\"luminance_total\":{0},", luminance_total);
                 }
 
                 // Attributes
-                json += "\"attribs\":{";
+                req.Append("\"attribs\":{");
+                string attribs_format = "\"{0}\":{{\"name\":\"{1}\",\"base\":{2},\"creation\":{3}}},";
 
                 foreach (var attr in MyCore.CharacterFilter.Attributes)
                 {
-                    json += "\"" + attr.Name.ToLower() + "\":{\"name\":\"" + attr.Name + "\",\"base\":" + attr.Base.ToString() + ",\"creation\":" + attr.Creation.ToString() + "},";
-                   
+                    req.AppendFormat(attribs_format, attr.Name.ToLower(), attr.Name, attr.Base, attr.Creation);
                 }
 
-                json = json.Remove(json.Length - 1);
-                json += "},";
+                req.Remove(req.Length - 1, 1);
+                req.Append("},");
 
 
                 // Vitals
-                json += "\"vitals\":{";
+                req.Append("\"vitals\":{");
+                string vitals_format = "\"{0}\":{{\"name\":\"{1}\",\"base\":{2}}},";
 
                 foreach (var vital in MyCore.CharacterFilter.Vitals)
                 {
-                    json += "\"" + vital.Name.ToLower() + "\":{\"name\":\"" + vital.Name + "\",\"base\":" + vital.Base.ToString() + "},";
+                    req.AppendFormat(vitals_format, vital.Name.ToLower(), vital.Name, vital.Base);
                 }
 
-                json = json.Remove(json.Length - 1);
-                json += "},";
+                req.Remove(req.Length - 1, 1);
+                req.Append("},");
 
 
                 // Skills
-                string skill_text = "";
                 Decal.Interop.Filters.SkillInfo skillinfo = null;
 
-                json += "\"skills\":{";
+                req.Append("\"skills\":{");
+                string skill_format = "\"{0}\":{{\"name\":\"{1}\",\"base\":{2},\"training\":\"{3}\"}},";
+
+                string name;
+                string training;
 
                 for (int i = 0; i < fs.SkillTable.Length; ++i)
                 {
                     try
                     {
                         skillinfo = MyCore.CharacterFilter.Underlying.get_Skill((Decal.Interop.Filters.eSkillID)fs.SkillTable[i].Id);
-                        string name = skillinfo.Name.ToLower().Replace(" ", "_");
-                        skill_text += name + "&" + skillinfo.Training.ToString() + "&" + skillinfo.Base.ToString() + "#";
-                        json += "\""+ name + "\":{\"name\":\"" + name + "\",\"base\":" + skillinfo.Base + ",\"training\":\"" + skillinfo.Training.ToString().Substring(6) + "\"},";
+
+                        name = skillinfo.Name.ToLower().Replace(" ", "_");
+                        training = skillinfo.Training.ToString().Substring(6);
+
+                        req.AppendFormat(skill_format, name, name, skillinfo.Base, training);
                     }
                     finally
                     {
@@ -239,14 +245,16 @@ namespace TreeStats
                             System.Runtime.InteropServices.Marshal.ReleaseComObject(skillinfo);
                             skillinfo = null;
                         }
+
+                        name = null;
+                        training = null;
                     }
                 }
 
-                skill_text = skill_text.Remove(skill_text.Length - 1);
 
-                json = json.Remove(json.Length - 1);
-                json += "},";
-                
+                req.Remove(req.Length - 1, 1);
+                req.Append("},");
+
 
                 // Monarch & Patron Information
                 // We wrap in try/catch because AllegianceInfoWrapper behaves oddly (Is not null when it should be? Not sure on this.)
@@ -255,7 +263,7 @@ namespace TreeStats
                 {
                     if (cf.Monarch != null)
                     {
-                        json += "\"monarch\":{\"name\":\"" + cf.Monarch.Name + "\",\"race\":" + cf.Monarch.Race + ",\"rank\":" + cf.Monarch.Rank + ",\"gender\":" + cf.Monarch.Gender + ",\"followers\":" + cf.MonarchFollowers + "},";
+                        req.AppendFormat("\"monarch\":{{\"name\":\"{0}\",\"race\":{1},\"rank\":{2},\"gender\":{3},\"followers\":{4}}},", cf.Monarch.Name, cf.Monarch.Race, cf.Monarch.Rank, cf.Monarch.Gender, cf.MonarchFollowers);
                     }
                 }
                 catch (Exception ex)
@@ -267,7 +275,7 @@ namespace TreeStats
                 {
                     if (cf.Patron != null)
                     {
-                        json += "\"patron\":{\"name\":\"" + cf.Patron.Name + "\",\"race\":" + cf.Patron.Race + ",\"rank\":" + cf.Patron.Rank + ",\"gender\":" + cf.Patron.Gender + "},";
+                        req.AppendFormat("\"patron\":{{\"name\":\"{0}\",\"race\":{1},\"rank\":{2},\"gender\":{3}}},", cf.Patron.Name, cf.Patron.Race, cf.Patron.Rank, cf.Patron.Gender);
                     }
                 }
                 catch (Exception ex)
@@ -279,16 +287,16 @@ namespace TreeStats
                 // Vassals
                 if (cf.Vassals != null && cf.Vassals.Count > 0)
                 {
-                    json += "\"vassals\":[";
+                    req.Append("\"vassals\":[");
+                    string vassal_format = "{{\"name\":\"{0}\",\"race\":{1},\"rank\":{2},\"gender\":{3}}},";
 
-                    
                     foreach (AllegianceInfoWrapper vassal in cf.Vassals)
                     {
-                        json += "{\"name\":\"" + vassal.Name + "\",\"race\":" + vassal.Race + ",\"rank\":" + vassal.Rank + ",\"gender\":" + vassal.Gender + "},";
+                        req.AppendFormat(vassal_format, vassal.Name, vassal.Race, vassal.Rank, vassal.Gender);
                     }
-                    
-                    json = json.Remove(json.Length - 1);
-                    json += "],";
+
+                    req.Remove(req.Length - 1, 1);
+                    req.Append("],");
                 }
 
 
@@ -296,44 +304,98 @@ namespace TreeStats
                 // Add titles to message if we have them
                 if (currentTitle != -1)
                 {
-                    json += "\"current_title\":" + currentTitle.ToString() + ",";
-                    json += "\"titles\":[";
+                    req.AppendFormat("\"current_title\":{0},", currentTitle);
+                    req.Append("\"titles\":[");
 
                     //foreach(int titleId in titlesList)
-                    for(int i = 0; i < titlesList.Count; i++)
+                    for (int i = 0; i < titlesList.Count; i++)
                     {
-                        //json += titleId.ToString() + ",";
-                        json += titlesList[i].ToString() + ",";
+                        req.AppendFormat("{0},", titlesList[i]);
                     }
 
                     // Remove final trailing comma
-                    json = json.Remove(json.Length - 1);
-                    json += "],";
+                    req.Remove(req.Length - 1, 1);
+                    req.Append("],");
                 }
 
 
                 // Character Properties
-                if(characterProperties.Count > 0)
+                if (characterProperties.Count > 0)
                 {
-                    json += "\"properties\":{";
+                    req.Append("\"properties\":{");
+
+                    string property_format = "\"{0}\":{1},";
 
                     foreach (var kvp in characterProperties)
                     {
-                        json += "\"" + kvp.Key + "\":" + kvp.Value.ToString() + ",";
+                        req.AppendFormat(property_format, kvp.Key, kvp.Value);
                     }
 
-                    json = json.Remove(json.Length - 1);
-                    json += "},";
+                    req.Remove(req.Length - 1, 1);
+                    req.Append("},");
                 }
 
-                // Remove final trailing comma
-                json = json.Remove(json.Length - 1);
-                
-                // Add closing bracket
-                json += "}";
+                req.Remove(req.Length - 1, 1);
+                req.Append("}");
 
                 // Encrypt POST request
-                lastMessage = Encryption.encrypt(json);
+                
+                lastMessage = Encryption.encrypt(req.ToString());
+
+                Logging.LogMessage(req.ToString());
+   
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
+            }
+        }
+
+        internal static void SendCharacterInfo(string message)
+        {
+            try
+            {
+                if (message == null || message.Length < 1)
+                {
+                    return;
+                }
+
+                //if(lastSend != DateTime.MinValue)
+                //{
+                //    TimeSpan diff = DateTime.Now - lastSend;
+
+                //    if (diff.Minutes <= 1)
+                //    {
+                //        Util.WriteToChat("Failed to send character: Please wait " + (60 - diff.Seconds).ToString() + "s before sending again. Thanks.");
+                //        return;
+                //    }
+                //}
+
+                // If we got this far, we can send. Update last send DateTime and send
+                lastSend = DateTime.Now;
+
+                Util.WriteToChat("Sending character update.");
+
+                // Do the sending
+                Uri endpoint = new Uri(TreestatsURL);
+
+                using (var client = new WebClient())
+                {
+                    client.UploadStringCompleted += (s, e) =>
+                    {
+                        if (e.Error != null)
+                        {
+                            Logging.LogError(e.Error);
+                            Util.WriteToChat("Upload Error: " + e.Error.Message);
+                        }
+                        else
+                        {
+                            Util.WriteToChat(e.Result);
+                        }
+                    };
+
+                    client.UploadStringAsync(endpoint, "POST", message);
+                }
             }
             catch (Exception ex)
             {
@@ -454,53 +516,6 @@ namespace TreeStats
                 if (active)
                 {
                     currentTitle = title;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logging.LogError(ex);
-            }
-        }
-
-        internal static void SendCharacterInfo(string message)
-        {
-            try
-            {
-                //if(lastSend != DateTime.MinValue)
-                //{
-                //    TimeSpan diff = DateTime.Now - lastSend;
-
-                //    if (diff.Minutes <= 1)
-                //    {
-                //        Util.WriteToChat("Failed to send character: Please wait " + (60 - diff.Seconds).ToString() + "s before sending again. Thanks.");
-                //        return;
-                //    }
-                //}
-
-                // If we got this far, we can send. Update last send DateTime and send
-                lastSend = DateTime.Now;
-
-                Util.WriteToChat("Sending character update.");
-                
-                // Do the sending
-                Uri endpoint = new Uri("http://floating-meadow-8649.herokuapp.com/");
-
-                using (var client = new WebClient())
-                {
-                    client.UploadStringCompleted += (s, e) =>
-                    {
-                        if (e.Error != null)
-                        {
-                            Logging.LogError(e.Error);
-                            Util.WriteToChat("Upload Error: " + e.Error.Message);
-                        }
-                        else
-                        {
-                            Util.WriteToChat(e.Result);
-                        }
-                    };
-
-                    client.UploadStringAsync(endpoint, "POST", message);
                 }
             }
             catch (Exception ex)
