@@ -1,0 +1,5 @@
+iex "git branch -D deploy"
+iex "git branch deploy"
+iex "git filter-branch --index-filter 'git rm --cached --ignore-unmatch Encryption.cs' -f deploy"
+iex "git push --force origin deploy:master"
+iex "git branch -D deploy"

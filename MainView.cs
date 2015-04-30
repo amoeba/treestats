@@ -46,8 +46,6 @@ namespace TreeStats
 
         static void btnSendUpdate_Hit(object sender, EventArgs e)
         {
-            Util.WriteToChat("btnSendUpdate_Hit");
-
             Character.DoUpdate();
         }
         
@@ -55,12 +53,12 @@ namespace TreeStats
         {
             if (e.Checked)
             {
-                Settings.autoMode = true;
+                Settings.SetAutoMode(true);
                 Settings.Save();
             }
             else
             {
-                Settings.autoMode = false;
+                Settings.SetAutoMode(false); ;
                 Settings.Save();
             }
         }

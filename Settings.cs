@@ -19,8 +19,6 @@ namespace TreeStats
         {
             try
             {
-                Logging.LogMessage("Settings::Init()");
-
                 settingsFile = _settingsFileName;
 
                 autoMode = false;
@@ -42,14 +40,10 @@ namespace TreeStats
         {
             try
             {
-                Logging.LogMessage("Settings::Save()");
-
                 System.IO.StreamWriter sw = new System.IO.StreamWriter(settingsFile, false);
 
                 // Write auto mode
                 sw.WriteLine("auto:" + autoMode.ToString());
-
-                Logging.LogMessage("trackedCharacters.Count is " + trackedCharacters.Count.ToString());
 
                 if (trackedCharacters.Count > 0)
                 {
@@ -82,13 +76,8 @@ namespace TreeStats
                 
                 if (!File.Exists(settingsFile))
                 {
-                    Logging.LogMessage("  settings file doesn't exist");
-
                     return;
                 }
-
-                
-                Logging.LogMessage("  settingsFile exists");
 
                 System.IO.StreamReader sr = new System.IO.StreamReader(settingsFile, true);
 
@@ -98,8 +87,6 @@ namespace TreeStats
 
                 while (!sr.EndOfStream)
                 {
-                    Logging.LogMessage("  Reading line " + i.ToString());
-
                     switch (i)
                     {
                         case 0: // Line 1 is auto mode setting, True | False
@@ -109,7 +96,6 @@ namespace TreeStats
                             if (tokens.Length == 2 && tokens[0] == "auto")
                             {
                                 // Try to grab token[1] as a bool
-
                                 if (tokens[1] == "True")
                                 {
                                     autoMode = true;
@@ -123,7 +109,6 @@ namespace TreeStats
                         case 1: // Line 2 is character keys, #-delimited
 
                             line = sr.ReadLine();
-
                             string[] keys = line.Split('#');
 
                             foreach (string key in keys)
@@ -149,19 +134,38 @@ namespace TreeStats
             }
         }
 
+        internal static void SetAutoMode(bool state)
+        {
+            try
+            {
+                if (state == true)
+                {
+                    Util.WriteToChat("Setting mode to automatic. Any characters you log into will be uploaded automatically.");
+                    autoMode = true;
+                }
+                else
+                {
+                    Util.WriteToChat("Setting mode to manual. Only characters you have explicitly added will be uploaded automatically.");
+                    autoMode = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
+            }
+        }
+
         internal static void ToggleMode()
         {
             try
             {
                 if (autoMode == true)
                 {
-                    Util.WriteToChat("Setting mode to manual. You must now either use @treestats send or @treestats add to send characters.");
-                    autoMode = false;
+                    SetAutoMode(true);
                 }
                 else
                 {
-                    Util.WriteToChat("Setting mode to automatic. Any characters you log into will be sent automatically.");
-                    autoMode = true;
+                    SetAutoMode(false);
                 }
             }
             catch (Exception ex)
@@ -176,19 +180,13 @@ namespace TreeStats
             {
                 if (!trackedCharacters.Exists(k => k == key))
                 {
-                    Util.WriteToChat("Now tracking " + key);
+                    Util.WriteToChat("Now tracking " + key + ".");
+
                     trackedCharacters.Add(key);
                 }
                 else
                 {
-                    Util.WriteToChat("Already tracking " + key);
-                }
-
-                Logging.LogMessage("Dumping trackedCharacters");
-
-                foreach(var k in trackedCharacters)
-                {
-                    Logging.LogMessage("    " + k);
+                    Util.WriteToChat("Already tracking " + key + ".");
                 }
             }
             catch (Exception ex)
@@ -203,20 +201,13 @@ namespace TreeStats
             {
                 if (trackedCharacters.Exists(k => k == key))
                 {
-                    Util.WriteToChat("No longer tracking " + key);
+                    Util.WriteToChat("No longer tracking " + key + ".");
 
                     trackedCharacters.Remove(key);
                 }
                 else
                 {
-                    Util.WriteToChat("Not already tracking " + key);
-                }
-
-                Logging.LogMessage("Dumping trackedCharacters");
-
-                foreach(var k in trackedCharacters)
-                {
-                    Logging.LogMessage("    " + k);
+                    Util.WriteToChat("Not already tracking " + key + ".");
                 }
             }
             catch (Exception ex)
@@ -234,9 +225,9 @@ namespace TreeStats
             catch (Exception ex)
             {
                 Logging.LogError(ex);
-
-                return false;
             }
+
+            return false;
         }
 
         internal static void ShowHelp()
@@ -249,8 +240,8 @@ namespace TreeStats
                 Util.WriteToChat("help: Shows this message.");
                 Util.WriteToChat("send: Sends the currently logged-in character (Max once per minute), no matter what other settings you have set.");
                 Util.WriteToChat("mode: Toggle mode between automatic and manual tracking.");
-                Util.WriteToChat("     auto: Automatically track new characters.");
-                Util.WriteToChat("     manual: Only track characters you manually add. See add/rem");
+                Util.WriteToChat("     auto: Automatically upload characters.");
+                Util.WriteToChat("     manual: Only upload characters you manually add. See add/rem.");
                 Util.WriteToChat("add: Enables tracking for the currently logged in character.");
                 Util.WriteToChat("rem: Removes tracking for the currently logged in character.");
             }

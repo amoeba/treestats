@@ -9,8 +9,6 @@ using Decal.Adapter.Wrappers;
 
 namespace TreeStats
 {
-    public delegate void QueuedAction();
-
     public static class Util
     {
         public static PluginHost MyHost;
@@ -27,7 +25,7 @@ namespace TreeStats
 
         public static void WriteToChat(string message)
         {
-            MyHost.Actions.AddChatText(message, 1, 1);
+            MyHost.Actions.AddChatText("[TreeStats] " + message, 1, 1);
         }
     }
 }

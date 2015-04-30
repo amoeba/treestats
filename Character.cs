@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Web;
+using WindowsTimer = System.Windows.Forms.Timer;
 
 using Decal.Adapter;
 using Decal.Adapter.Wrappers;
@@ -12,12 +13,14 @@ namespace TreeStats
     public static class Character
     {
         public const string TreestatsURL = "http://treestats.herokuapp.com/";
+        public static Uri endpoint;
 
         public static CoreManager MyCore { get; set; }
         public static PluginHost MyHost { get; set; }
 
-        // Throttle sending to once per minute
-        public static DateTime lastSend;
+        // Updates
+        public static DateTime lastSend;// Throttle sending to once per minute
+        public static WindowsTimer updateTimer;// Automatically send updates every hour
 
         // Store latest message 
         public static string lastMessage = null;
@@ -56,6 +59,8 @@ namespace TreeStats
         {
             try
             {
+                endpoint = new Uri(TreestatsURL);
+
                 Logging.loggingState = true;
 
                 MyCore = core;
@@ -78,6 +83,13 @@ namespace TreeStats
                      92,98,105,106,107,108,109,110,111,113,114,115,117,125,129,131,134,158,
                      159,160,166,170,171,172,174,175,176177,178,179,188,193,270,271,272,293
                 };
+
+
+                // Set up timed updates
+                updateTimer = new WindowsTimer();
+                updateTimer.Interval = 1000 * 70;
+                updateTimer.Tick += new EventHandler(updateTimer_Tick);
+                updateTimer.Start();
             }
             catch (Exception ex)
             {
@@ -89,6 +101,8 @@ namespace TreeStats
         {
             try
             {
+                endpoint = null;
+
                 lastMessage = null;
 
                 characterProperties.Clear();
@@ -96,12 +110,33 @@ namespace TreeStats
 
                 dwordBlacklist.Clear();
                 dwordBlacklist = null;
+
+                if (updateTimer != null)
+                {
+                    updateTimer.Stop();
+                    updateTimer.Tick -= updateTimer_Tick;
+                    updateTimer.Dispose();
+                    updateTimer = null;
+                }
             }
             catch (Exception ex)
             {
                 Logging.LogError(ex);
             }
         }
+
+        internal static void updateTimer_Tick(object sender, EventArgs e)
+        {
+            Logging.LogMessage("updateTimer_Tick");
+
+            TryUpdate();
+        }
+
+
+        /* DoUpdate()
+         * 
+         * Sends an update without checking for the minimum send interval
+         */
 
         internal static void DoUpdate()
         {
@@ -117,7 +152,31 @@ namespace TreeStats
         }
 
 
+        /* TryUpdate()
+         * 
+         * Sends an update via DoUpdate() after checking for the minimum time interval
+         */
+
+        internal static void TryUpdate()
+        {
+            if (lastSend != DateTime.MinValue) // Null check: Can't do null checks on DateTimes, so we do this
+            {
+                TimeSpan diff = DateTime.Now - lastSend;
+
+                if (diff.Minutes < 1) // Hard-coded one minute interval
+                {
+                    Util.WriteToChat("Failed to send character: Please wait " + (60 - diff.Seconds).ToString() + "s before sending again. Thanks.");
+
+                    return;
+                }
+            }
+
+            DoUpdate();
+        }
+
+
         /* GetCharacterInfo()
+         * 
          * Gets player information
          *  
          * This method builds a JSON request string which is later encrypted
@@ -138,9 +197,6 @@ namespace TreeStats
                 {
                     return;
                 }
-
-                Util.WriteToChat("GetCharacterInfo");
-                Logging.LogMessage("GetCharacterInfo()");
 
                 req = new StringBuilder();
 
@@ -352,37 +408,22 @@ namespace TreeStats
         {
             try
             {
+                lastSend = DateTime.Now;
+
                 if (message == null || message.Length < 1)
                 {
                     return;
                 }
 
-                //if(lastSend != DateTime.MinValue)
-                //{
-                //    TimeSpan diff = DateTime.Now - lastSend;
-
-                //    if (diff.Minutes <= 1)
-                //    {
-                //        Util.WriteToChat("Failed to send character: Please wait " + (60 - diff.Seconds).ToString() + "s before sending again. Thanks.");
-                //        return;
-                //    }
-                //}
-
-                // If we got this far, we can send. Update last send DateTime and send
-                lastSend = DateTime.Now;
-
                 Util.WriteToChat("Sending character update.");
 
                 // Do the sending
-                Uri endpoint = new Uri(TreestatsURL);
-
                 using (var client = new WebClient())
                 {
                     client.UploadStringCompleted += (s, e) =>
                     {
                         if (e.Error != null)
                         {
-                            Logging.LogError(e.Error);
                             Util.WriteToChat("Upload Error: " + e.Error.Message);
                         }
                         else
@@ -502,13 +543,8 @@ namespace TreeStats
         {
             try
             {
-
-                Logging.LogMessage("ProcessSetTitleMessage");
-
                 Int32 title = e.Message.Value<Int32>("title");
                 bool active = e.Message.Value<bool>("active");
-
-                Logging.LogMessage("Title: " + title.ToString() + ", Active: " + active.ToString());
 
                 if (active)
                 {
