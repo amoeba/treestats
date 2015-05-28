@@ -91,6 +91,8 @@ namespace TreeStats
                 updateTimer.Interval = 1000 * 60 * 60; // One hour
                 updateTimer.Tick += new EventHandler(updateTimer_Tick);
                 updateTimer.Start();
+
+                sentServerPopulation = false;
             }
             catch (Exception ex)
             {
