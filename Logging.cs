@@ -18,7 +18,7 @@ namespace TreeStats
 
         internal static void Init(string _messages, string _errors)
         {
-            loggingState = true;
+            loggingState = false;
             messagesFile = _messages;
             errorLogFile = _errors;
         }

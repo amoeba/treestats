@@ -62,8 +62,6 @@ namespace TreeStats
             {
                 endpoint = new Uri(TreestatsURL);
 
-                Logging.loggingState = true;
-
                 MyCore = core;
                 MyHost = host;
 
