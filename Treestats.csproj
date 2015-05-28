@@ -50,6 +50,7 @@
     <DefineConstants>TRACE;VVS_REFERENCED DECAL_INTEROP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Decal.Adapter, Version=2.9.7.5, Culture=neutral, PublicKeyToken=bd1c8ce002ce221e, processorArchitecture=x86">
