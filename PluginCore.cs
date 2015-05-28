@@ -119,7 +119,7 @@ namespace TreeStats
                         }
                         else if (command == "send")
                         {
-                            Character.DoUpdate();
+                            Character.TryUpdate();
                         }
                         else if (command == "mode")
                         {
