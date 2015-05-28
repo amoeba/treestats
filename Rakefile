@@ -16,6 +16,9 @@ task :deploy do
   branches=`git branch -v`
   puts branches
   
+  puts ">> git branch deploy"
+  `git branch deploy`
+  
   puts ">> git filter-branch"
   `git filter-branch --index-filter 'git rm --cached --ignore-unmatch Encryption.cs' -f deploy`
   
