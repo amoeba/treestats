@@ -19,8 +19,9 @@ namespace TreeStats
         public static PluginHost MyHost { get; set; }
 
         // Updates
-        public static DateTime lastSend;// Throttle sending to once per minute
-        public static WindowsTimer updateTimer;// Automatically send updates every hour
+        public static DateTime lastSend; // Throttle sending to once per minute
+        public static WindowsTimer updateTimer; // Automatically send updates every hour
+        public static bool serverPopulationSent; // Only send server pop the first time (after login)
 
         // Store latest message 
         public static string lastMessage = null;
@@ -227,7 +228,19 @@ namespace TreeStats
                 req.AppendFormat("\"rank\":{0},", cf.Rank);
                 req.AppendFormat("\"followers\":{0},", cf.Followers);
                 req.AppendFormat("\"server\":\"{0}\",", cf.Server);
-                req.AppendFormat("\"server_population\":{0},", cf.ServerPopulation);
+
+                /* Only append server population if it hasn't been sent yet (we just logged in).
+                / Character Filter only receives this value from the server and login, instead
+                / of continuously. If we sent this each time we'd be reporting inaccurate server
+                 * populations.
+                */
+                if (!serverPopulationSent)
+                {
+                    req.AppendFormat("\"server_population\":{0},", cf.ServerPopulation);
+                    serverPopulationSent = true;
+                }
+
+
                 req.AppendFormat("\"deaths\":{0},", cf.Deaths);
                 req.AppendFormat("\"birth\":\"{0}\",", cf.Birth);
                 req.AppendFormat("\"total_xp\":{0},", cf.TotalXP);
