@@ -21,7 +21,7 @@ namespace TreeStats
         // Updates
         public static DateTime lastSend; // Throttle sending to once per minute
         public static WindowsTimer updateTimer; // Automatically send updates every hour
-        public static bool serverPopulationSent; // Only send server pop the first time (after login)
+        public static bool sentServerPopulation; // Only send server pop the first time (after login)
 
         // Store latest message 
         public static string lastMessage = null;
@@ -234,10 +234,10 @@ namespace TreeStats
                 / of continuously. If we sent this each time we'd be reporting inaccurate server
                  * populations.
                 */
-                if (!serverPopulationSent)
+                if (!sentServerPopulation)
                 {
                     req.AppendFormat("\"server_population\":{0},", cf.ServerPopulation);
-                    serverPopulationSent = true;
+                    sentServerPopulation = true;
                 }
 
 
