@@ -88,7 +88,7 @@ namespace TreeStats
 
                 // Set up timed updates
                 updateTimer = new WindowsTimer();
-                updateTimer.Interval = 1000 * 70;
+                updateTimer.Interval = 1000 * 60 * 60; // One hour
                 updateTimer.Tick += new EventHandler(updateTimer_Tick);
                 updateTimer.Start();
             }
