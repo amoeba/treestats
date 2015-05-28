@@ -123,22 +123,16 @@ namespace TreeStats
                         }
                         else if (command == "mode")
                         {
-                            Util.WriteToChat("mode command");
-
                             Settings.ToggleMode();
                             Settings.Save();
                         }
                         else if (command == "add")
                         {
-                            Util.WriteToChat("add command");
-
                             Settings.AddCharacter(Core.CharacterFilter.Server + "-" + Core.CharacterFilter.Name);
                             Settings.Save();
                         }
                         else if (command == "rem")
                         {
-                            Util.WriteToChat("rem command");
-
                             Settings.RemoveCharacter(Core.CharacterFilter.Server + "-" + Core.CharacterFilter.Name);
                             Settings.Save();
                         }
