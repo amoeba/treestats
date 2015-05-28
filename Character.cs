@@ -180,7 +180,7 @@ namespace TreeStats
          * Gets player information
          *  
          * This method builds a JSON request string which is later encrypted
-         * It would be really nice to use a propert data structure for
+         * It would be really nice to use a proper data structure for
          * this and using Json.NET to serialize that data structure.
          * 
          * Some of the stuff here is stored beforehand from other messages
