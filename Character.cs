@@ -130,7 +130,7 @@ namespace TreeStats
         {
             Logging.LogMessage("updateTimer_Tick");
 
-            TryUpdate();
+            TryUpdate(false);
         }
 
 
@@ -158,8 +158,24 @@ namespace TreeStats
          * Sends an update via DoUpdate() after checking for the minimum time interval
          */
 
-        internal static void TryUpdate()
+        internal static void TryUpdate(bool isManual)
         {
+            /*
+             * Bail if WeakReference shouldn't send this character.
+             * Only applies to automatic updates
+             * ShouldSend(key) checks two conditions:
+             *   1. Are we auto-sending all characters?
+             *   2. Regardless of (1), is this character on the manual send list?
+             */
+
+            if (!isManual)
+            {
+                if (!Settings.ShouldSend(Character.server + "-" + Character.character))
+                {
+                    return;
+                }
+            }
+
             if (lastSend != DateTime.MinValue) // Null check: Can't do null checks on DateTimes, so we do this
             {
                 TimeSpan diff = DateTime.Now - lastSend;

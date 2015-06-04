@@ -46,7 +46,7 @@ namespace TreeStats
 
         static void btnSendUpdate_Hit(object sender, EventArgs e)
         {
-            Character.TryUpdate();
+            Character.TryUpdate(true);
         }
         
         static void chkAutoMode_Change(object sender, MyClasses.MetaViewWrappers.MVCheckBoxChangeEventArgs e)
