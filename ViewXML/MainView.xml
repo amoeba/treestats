@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<view icon="4987" title="TreeStats" width="160" height="250">
+<view icon="4987" title="TreeStats" width="200" height="200">
   <control progid="DecalControls.FixedLayout" clipped="">
-    <control progid="DecalControls.CheckBox" name="chkAutoMode" left="20" top="20" width="180" height="30" text="Auto. Send Character" checked="false"/>
-    <control progid="DecalControls.PushButton" name="btnSendUpdate" left="20" top="50" width="120" height="30" text="Send Character" />
-    <control progid="DecalControls.StaticText" name="txtWhitelist" left="20" top="100" width="120" height="30" text="Whitelist:" />
-    <control progid="DecalControls.PushButton" name="btnAddCharacter" left="20" top="130" width="120" height="30" text="Add Character" />
-    <control progid="DecalControls.PushButton" name="btnRemoveCharacter" left="20" top="180" width="120" height="30" text="Remove Character" />
+    <control progid="DecalControls.CheckBox" name="chkAutoMode" left="20" top="20" width="180" height="25" text="Auto. Send All Characters" checked="false"/>
+    <control progid="DecalControls.PushButton" name="btnSendUpdate" left="20" top="40" width="160" height="25" text="Manually Send Character" />
+    <control progid="DecalControls.StaticText" name="txtWhitelist" left="20" top="80" width="180" height="25" text="Whitelist (Always Send):" />
+    <control progid="DecalControls.PushButton" name="btnAddCharacter" left="20" top="100" width="120" height="25" text="Add Character" />
+    <control progid="DecalControls.PushButton" name="btnRemoveCharacter" left="20" top="130" width="120" height="25" text="Remove Character" />
   </control>
 </view>
