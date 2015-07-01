@@ -19,9 +19,9 @@ namespace TreeStats
         public static PluginHost MyHost { get; set; }
 
         // Updates
-        public static DateTime lastSend; // Throttle sending to once per minute
-        public static WindowsTimer updateTimer; // Automatically send updates every hour
-        public static bool sentServerPopulation; // Only send server pop the first time (after login)
+        public static DateTime lastSend;            // Throttle sending to once per minute
+        public static WindowsTimer updateTimer;     // Automatically send updates every hour
+        public static bool sentServerPopulation;    // Only send server pop the first time (after login)
 
         // Store latest message 
         public static string lastMessage = null;
