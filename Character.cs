@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Net;
-using System.Web;
 using WindowsTimer = System.Windows.Forms.Timer;
 
 using Decal.Adapter;
@@ -18,13 +17,14 @@ namespace TreeStats
         public static PluginHost MyHost { get; set; }
 
         // Updates
-        public static DateTime lastSend;            // Throttle sending to once per minute
+        public static DateTime lastSend;            // Throttle sending
+        public static int minimumSendInterval = 5;  // Seconds
         public static WindowsTimer updateTimer;     // Automatically send updates every hour
+        public static int updateTimerInterval = 1000 * 60 * 60; // One hour
         public static bool sentServerPopulation;    // Only send server pop the first time (after login)
-
+        
         // Store latest message 
         public static string lastMessage = null;
-        public static StringBuilder req;
 
         // Make an area to store information
         // These are stored for later because we get some of
@@ -79,13 +79,13 @@ namespace TreeStats
                 {
                      2,5,7,10,17,19,20,24,25,26,28,30,33,35,36,38,43,45,86,87,88,89,90,91,
                      92,98,105,106,107,108,109,110,111,113,114,115,117,125,129,131,134,158,
-                     159,160,166,170,171,172,174,175,176177,178,179,188,193,270,271,272,293
+                     159,160,166,170,171,172,174,175,176,177,178,179,188,193,270,271,272,293
                 };
 
 
                 // Set up timed updates
                 updateTimer = new WindowsTimer();
-                updateTimer.Interval = 1000 * 60 * 60; // One hour
+                updateTimer.Interval = updateTimerInterval;
                 updateTimer.Tick += new EventHandler(updateTimer_Tick);
                 updateTimer.Start();
 
@@ -127,7 +127,7 @@ namespace TreeStats
 
         internal static void updateTimer_Tick(object sender, EventArgs e)
         {
-            Logging.LogMessage("updateTimer_Tick");
+            Logging.LogMessage("updateTimer_Tick()");
 
             TryUpdate(false);
         }
@@ -142,6 +142,8 @@ namespace TreeStats
         {
             try
             {
+                Logging.LogMessage("DoUpdate()");
+
                 GetCharacterInfo();
                 SendCharacterInfo(lastMessage);
             }
@@ -159,8 +161,15 @@ namespace TreeStats
 
         internal static void TryUpdate(bool isManual)
         {
+            TryUpdate(isManual, false);
+        }
+
+        internal static void TryUpdate(bool isManual, bool isQuiet)
+        {
+            Logging.LogMessage("TryUpdate()");
+
             /*
-             * Bail if WeakReference shouldn't send this character.
+             * Bail if we shouldn't send this character.
              * Only applies to automatic updates
              * ShouldSend(key) checks two conditions:
              *   1. Are we auto-sending all characters?
@@ -169,7 +178,7 @@ namespace TreeStats
 
             if (!isManual)
             {
-                if (!Settings.ShouldSend(Character.server + "-" + Character.character))
+                if (!Settings.ShouldSendCharacter(Character.server + "-" + Character.character))
                 {
                     return;
                 }
@@ -179,9 +188,12 @@ namespace TreeStats
             {
                 TimeSpan diff = DateTime.Now - lastSend;
 
-                if (diff.Minutes < 1) // Hard-coded one minute interval
+                if (diff.Seconds < updateTimerInterval) // Hard-coded 20 second
                 {
-                    Util.WriteToChat("Failed to send character: Please wait " + (60 - diff.Seconds).ToString() + "s before sending again. Thanks.");
+                    if (!isQuiet)
+                    {
+                        Util.WriteToChat("Failed to send character: Please wait " + (updateTimerInterval - diff.Seconds).ToString() + "s before sending again. Thanks.");
+                    }
 
                     return;
                 }
@@ -211,21 +223,23 @@ namespace TreeStats
             {
                 if (MyCore.CharacterFilter.Name == null)
                 {
+                    Logging.LogMessage("Core.CharacterFilter.Name was null. This is really bad.");
+                    
                     return;
                 }
-
-                req = new StringBuilder();
-
-                // One long string stores the entire POST request body
-                req.Append("{");
 
                 // Declare the fileservice for later use
                 Decal.Adapter.Wrappers.CharacterFilter cf = MyCore.CharacterFilter;
                 Decal.Filters.FileService fs = CoreManager.Current.FileService as Decal.Filters.FileService;
 
-                // Update character and server for later
+                // Save character and server for later since we're going to use this alot
                 character = cf.Name;
                 server = cf.Server;
+
+                // One long string stores the entire POST request body
+                // And the string is generated with StringBuilder
+                StringBuilder req = new StringBuilder();
+                req.Append("{");
 
                 // Add the TreeStats Account if it's valid (logged in)
                 Logging.LogMessage("Checking whether player is logged in...");
@@ -431,12 +445,14 @@ namespace TreeStats
                     req.Append("},");
                 }
 
-                req.Remove(req.Length - 1, 1);
+                req.Remove(req.Length - 1, 1); // Remove trailing comma
                 req.Append("}");
 
                 // Encrypt POST request
                 
                 lastMessage = Encryption.encrypt(req.ToString());
+
+                Logging.LogMessage(lastMessage);
             }
             catch (Exception ex)
             {

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 using Decal.Adapter;
 using Decal.Adapter.Wrappers;
@@ -12,6 +10,10 @@ namespace TreeStats
     {
         public static PluginHost MyHost;
         public static CoreManager MyCore;
+
+        // Allow for different base URIs
+        // No trailing slash
+        public static string urlBase = "http://treestats.net/";
 
         protected override void Startup()
         {
@@ -26,11 +28,7 @@ namespace TreeStats
                 Character.Init(MyCore, MyHost);
                 Settings.Init(Path.ToString() + "\\settings.txt");
                 Util.Init(MyHost);
-
-                // Load settings
                 Settings.Load();
-
-                // Load View
                 MainView.ViewInit();
 
                 // Bind events
@@ -54,7 +52,6 @@ namespace TreeStats
                 Character.Destroy();
                 Util.Destroy();
                 Settings.Destroy();
-
                 MainView.ViewDestroy();
 
                 // Unbind events
@@ -77,6 +74,8 @@ namespace TreeStats
                 Logging.LogMessage("LoginComplete");
                 Logging.LogMessage("  Server:" + Core.CharacterFilter.Server);
                 Logging.LogMessage("  Character: " + Core.CharacterFilter.Name);
+                Logging.LogMessage("  ShouldSend() : " + Settings.ShouldSendCharacter(Core.CharacterFilter.Server + "-" + Core.CharacterFilter.Name).ToString());
+                Logging.LogMessage("  ShouldLogin() " + Account.ShouldLogin().ToString());
 
                 // Log in (if applicable)
                 if (Account.ShouldLogin())
