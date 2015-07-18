@@ -87,6 +87,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Account.cs" />
+    <Compile Include="Messaging.cs" />
     <Compile Include="Encryption.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="MainView.cs" />
