@@ -12,7 +12,6 @@ namespace TreeStats
 {
     public static class Character
     {
-        public const string TreestatsURL = "http://treestats.herokuapp.com/";
         public static Uri endpoint;
 
         public static CoreManager MyCore { get; set; }
@@ -60,7 +59,7 @@ namespace TreeStats
         {
             try
             {
-                endpoint = new Uri(TreestatsURL);
+                endpoint = new Uri(PluginCore.urlBase);
 
                 MyCore = core;
                 MyHost = host;
