@@ -12,6 +12,10 @@ namespace TreeStats
         static MyClasses.MetaViewWrappers.IButton btnAddCharacter;
         static MyClasses.MetaViewWrappers.IButton btnRemoveCharacter;
 
+        static MyClasses.MetaViewWrappers.ICheckBox chkUseAccount;
+        static MyClasses.MetaViewWrappers.ITextBox edtAccountName;
+        static MyClasses.MetaViewWrappers.ITextBox edtAccountPassword;
+
         public static void ViewInit()
         {
             Logging.LogMessage("ViewInit()");
@@ -31,15 +35,50 @@ namespace TreeStats
             btnRemoveCharacter = (MyClasses.MetaViewWrappers.IButton)View["btnRemoveCharacter"];
             btnRemoveCharacter.Hit += new EventHandler(btnRemoveCharacter_Hit);
 
+            btnSendUpdate = (MyClasses.MetaViewWrappers.IButton)View["btnAccountCreate"];
+            btnSendUpdate.Hit += new EventHandler(btnAccountCreate_Hit);
+            
+            btnSendUpdate = (MyClasses.MetaViewWrappers.IButton)View["btnAccountLogin"];
+            btnSendUpdate.Hit += new EventHandler(btnAccountLogin_Hit);
+
+            chkUseAccount = (MyClasses.MetaViewWrappers.ICheckBox)View["chkUseAccount"];
+            chkUseAccount.Change += new EventHandler<MyClasses.MetaViewWrappers.MVCheckBoxChangeEventArgs>(chkUseAccount_Change);
+
+            edtAccountName = (MyClasses.MetaViewWrappers.ITextBox)View["edtAccountName"];
+            edtAccountPassword = (MyClasses.MetaViewWrappers.ITextBox)View["edtAccountPassword"];
+
+            // Load UI state from settings
+
             if (Settings.autoMode == true)
             {
                 chkAutoMode.Checked = true;
+            }
+
+            if (Settings.useAccount == true)
+            {
+                chkUseAccount.Checked = true;
+            }
+
+            if (Settings.accountName != null)
+            {
+                edtAccountName.Text = Settings.accountName;
+            }
+
+            if (Settings.accountPassword != null)
+            {
+                edtAccountPassword.Text = Settings.accountPassword;
             }
         }
 
         public static void ViewDestroy()
         {
             btnSendUpdate = null;
+            chkAutoMode = null;
+            btnAddCharacter = null;
+            btnRemoveCharacter = null;
+            btnSendUpdate = null;
+            btnSendUpdate = null;
+            chkUseAccount = null;
 
             View.Dispose();
         }
@@ -48,7 +87,7 @@ namespace TreeStats
         {
             Character.TryUpdate(true);
         }
-        
+
         static void chkAutoMode_Change(object sender, MyClasses.MetaViewWrappers.MVCheckBoxChangeEventArgs e)
         {
             if (e.Checked)
@@ -74,5 +113,35 @@ namespace TreeStats
             Settings.RemoveCharacter(PluginCore.MyCore.CharacterFilter.Server + "-" + PluginCore.MyCore.CharacterFilter.Name);
             Settings.Save();
         }
+
+
+        static void chkUseAccount_Change(object sender, MyClasses.MetaViewWrappers.MVCheckBoxChangeEventArgs e)
+        {
+            if (e.Checked)
+            {
+                Settings.useAccount = true;
+                Settings.Save();
+            }
+            else
+            {
+                Settings.useAccount = false;
+                Settings.Save();
+            }
+        }
+
+        static void btnAccountLogin_Hit(object sender, EventArgs e)
+        {
+            Logging.LogMessage("btnAccountLogin_Hit");
+
+            Account.Login(edtAccountName.Text, edtAccountPassword.Text);
+        }
+
+        static void btnAccountCreate_Hit(object sender, EventArgs e)
+        {
+            Logging.LogMessage("btnAccountCreate_Hit");
+
+            Account.Create(edtAccountName.Text, edtAccountPassword.Text);
+        }
+
     }
 }

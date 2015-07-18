@@ -228,6 +228,18 @@ namespace TreeStats
                 character = cf.Name;
                 server = cf.Server;
 
+                // Add the TreeStats Account if it's valid (logged in)
+                Logging.LogMessage("Checking whether player is logged in...");
+                Logging.LogMessage("  Settings::isLoggedIn() : " + Settings.isLoggedIn.ToString());
+                Logging.LogMessage("  Settings::useAccount() : " + Settings.useAccount.ToString());
+                Logging.LogMessage("  Settings::accountName() : " + Settings.accountName);
+
+                if (Settings.isLoggedIn && Settings.useAccount && Settings.accountName.Length > 0 && Settings.accountPassword.Length > 0)
+                {
+                    Logging.LogMessage("Appending account name " + Settings.accountName + " to this upload.");
+                    req.AppendFormat("\"account_name\":\"{0}\",", Settings.accountName);
+                }
+
                 // General attributes
                 req.AppendFormat("\"version\":\"{0}\",", 1);
                 req.AppendFormat("\"name\":\"{0}\",", cf.Name);

@@ -78,13 +78,19 @@ namespace TreeStats
                 Logging.LogMessage("  Server:" + Core.CharacterFilter.Server);
                 Logging.LogMessage("  Character: " + Core.CharacterFilter.Name);
 
-                Logging.LogMessage("  ShouldSend() : " + Settings.ShouldSend(Core.CharacterFilter.Server + "-" + Core.CharacterFilter.Name).ToString());
-
-                if (Settings.ShouldSend(Core.CharacterFilter.Server + "-" + Core.CharacterFilter.Name))
+                // Log in (if applicable)
+                if (Account.ShouldLogin())
                 {
-                    Logging.LogMessage("Character.DoUpdate()");
+                    Account.Login(Settings.accountName, Settings.accountPassword);
+                }
+                else
+                {
 
-                    Character.DoUpdate();
+                    // Upload (if applicable)
+                    if (Settings.ShouldSendCharacter(Core.CharacterFilter.Server + "-" + Core.CharacterFilter.Name))
+                    {
+                        Character.DoUpdate();
+                    }
                 }
             }
             catch (Exception ex)

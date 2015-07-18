@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 using Decal.Adapter;
 using Decal.Adapter.Wrappers;
@@ -9,11 +10,16 @@ namespace TreeStats
 {
     public static class Settings
     {
+        // Accessor for settings file
         public static string settingsFile { get; set; }
 
         // Tracked settings
         public static bool autoMode;
         public static List<string> trackedCharacters;
+        public static bool useAccount;
+        public static string accountName;
+        public static string accountPassword;
+        public static bool isLoggedIn;
 
         internal static void Init(string _settingsFileName)
         {
@@ -23,6 +29,10 @@ namespace TreeStats
 
                 autoMode = false;
                 trackedCharacters = new List<string>();
+                useAccount = false;
+                accountName = "";
+                accountPassword = "";
+                isLoggedIn = false;
             }
             catch (Exception ex)
             {
@@ -32,30 +42,45 @@ namespace TreeStats
 
         internal static void Destroy()
         {
+            settingsFile = null;
             trackedCharacters.Clear();
             trackedCharacters = null;
+            accountName = null;
+            accountPassword = null;
         }
 
         internal static void Save()
         {
             try
             {
+                Logging.LogMessage("Settings::Save()");
+
                 System.IO.StreamWriter sw = new System.IO.StreamWriter(settingsFile, false);
 
                 // Write auto mode
                 sw.WriteLine("auto:" + autoMode.ToString());
 
+                // Write account info if present
+                sw.WriteLine("use_account:" + useAccount.ToString());
+
+                if (accountName.Length > 0 && accountPassword.Length > 0)
+                {
+                    sw.WriteLine("account:" + accountName + "#" + accountPassword);
+                }
+
+                // Write tracked characters
                 if (trackedCharacters.Count > 0)
                 {
                     // Write character list
-                    string characters = "";
+                    StringBuilder characters = new StringBuilder();
+                    characters.Append("characters:");
 
                     foreach (string key in trackedCharacters)
                     {
-                        characters += key + "#";
+                        characters.AppendFormat("{0}#", key);
                     }
 
-                    characters = characters.Remove(characters.Length - 1); // Remove last #
+                    characters = characters.Remove(characters.Length - 1, 1); // Remove last #
 
                     sw.WriteLine(characters);
                 }
@@ -72,7 +97,7 @@ namespace TreeStats
         {
             try
             {
-                Logging.LogMessage("Load()"); 
+                Logging.LogMessage("Settings::Load()"); 
                 
                 if (!File.Exists(settingsFile))
                 {
@@ -82,34 +107,43 @@ namespace TreeStats
                 System.IO.StreamReader sr = new System.IO.StreamReader(settingsFile, true);
 
                 // Read in lines from the file
-                string line = "";
-                int i = 0;
+                string line = String.Empty;
+                string[] tokens;
+                string[] keys;
 
-                while (!sr.EndOfStream)
+                while ((line = sr.ReadLine()) != null)
                 {
-                    switch (i)
+                    Logging.LogMessage("Settings::Load(): line = \"" + line + "\"");
+
+                    tokens = line.Split(':');
+
+                    Logging.LogMessage("Settings::Load(): tokens[0] = \"" + tokens[0] + "\"");
+
+                    if (tokens.Length == 2)
                     {
-                        case 0: // Line 1 is auto mode setting, True | False
-                            line = sr.ReadLine();
-                            string[] tokens = line.Split(':');
+                        Logging.LogMessage("Settings::Load(): tokens[1] = \"" + tokens[1] + "\"");
+                    }
 
-                            if (tokens.Length == 2 && tokens[0] == "auto")
+                    switch (tokens[0])
+                    {
+                        case "auto": // Auto mode setting, True | False
+                            Logging.LogMessage("Reading auto mode setting with stored value of " + tokens[1]);
+
+                            // Try to grab token[1] as a bool
+                            if (tokens[1] == "True")
                             {
-                                // Try to grab token[1] as a bool
-                                if (tokens[1] == "True")
-                                {
-                                    autoMode = true;
-                                }
-                                else if (tokens[1] == "False")
-                                {
-                                    autoMode = false;
-                                }
+                                autoMode = true;
                             }
-                            break;
-                        case 1: // Line 2 is character keys, #-delimited
+                            else if (tokens[1] == "False")
+                            {
+                                autoMode = false;
+                            }
 
-                            line = sr.ReadLine();
-                            string[] keys = line.Split('#');
+                            break;
+                        case "characters": // Character keys, #-delimited
+                            Logging.LogMessage("Reading characters setting with stored value of " + tokens[1]);
+
+                            keys = tokens[1].Split('#');
 
                             foreach (string key in keys)
                             {
@@ -120,13 +154,61 @@ namespace TreeStats
                             }
 
                             break;
+                        case "use_account": // Line 3 is whether to use an account
+                            Logging.LogMessage("Reading use_account setting with stored value of " + tokens[1]);
+
+                            // Try to grab token[1] as a bool
+                            if (tokens[1] == "True")
+                            {
+                                useAccount = true;
+                            }
+                            else if (tokens[1] == "False")
+                            {
+                                useAccount = false;
+                            }
+
+                            break;
+                        case "account": // Line 4 is account info, #-separated
+                            Logging.LogMessage("Reading account setting with stored value of " + tokens[1]);
+                            keys = tokens[1].Split('#');
+
+                            if (keys.Length != 2 && keys[0].Length > 0 && keys[1].Length > 0)
+                            {
+                                break;
+                            }
+
+                            accountName = keys[0];
+                            accountPassword = keys[1];
+
+                            break;
                         default:
+                            /* Handle legacy support of old settings file format:
+                             * 
+                             * The first settings file format had no key name, 
+                             * i.e. 'characters:Kolthar al Magus-WintersEbb'
+                             * and was instead just 'Kolthar al Magus-WintersEbb'.
+                             * This default route should catch old settings files.
+                             */
+                            Logging.LogMessage("default case:");
+
+                            keys = line.Split('#');
+                            Logging.LogMessage("Found " + keys.Length.ToString() + " characters.");
+
+                            foreach (string key in keys)
+                            {
+                                Logging.LogMessage("  " + key);
+
+                                if (key.Length > 0)
+                                {
+                                    AddCharacter(key);
+                                }
+                            }
+
                             break;
                     }
-
-                    i += 1;
                 }
 
+                sr.Close();
             }
             catch (Exception ex)
             {
@@ -216,7 +298,7 @@ namespace TreeStats
             }
         }
 
-        internal static bool ShouldSend(string key)
+        internal static bool ShouldSendCharacter(string key)
         {
             try
             {
