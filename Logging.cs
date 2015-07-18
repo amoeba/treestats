@@ -15,10 +15,11 @@ namespace TreeStats
         public static bool loggingState { get; set; }
         public static string messagesFile { get; set; }
         public static string errorLogFile { get; set; }
+        public static int fileSizeLimit = 102400; // 100 KB
 
         internal static void Init(string _messages, string _errors)
         {
-            loggingState = false;
+            loggingState = true;
             messagesFile = _messages;
             errorLogFile = _errors;
         }
@@ -32,13 +33,24 @@ namespace TreeStats
         {
             try
             {
-
                 if (loggingState == false)
                 {
                     return;
                 }
 
-                System.IO.StreamWriter sw = new System.IO.StreamWriter(messagesFile, true);
+                bool shouldAppend = true; // Default to appending log message
+                
+                // Check file size and decide whether to append or not
+                FileInfo info = new FileInfo(messagesFile);
+
+                if (info.Length > fileSizeLimit)
+                {
+                    shouldAppend = false;
+                }
+
+
+                System.IO.StreamWriter sw = new System.IO.StreamWriter(messagesFile, shouldAppend);
+
                 sw.WriteLine("[" + DateTime.Now.ToString() + "] " + message);
                 sw.Close();
             }
@@ -55,7 +67,19 @@ namespace TreeStats
                 return;
             }
 
-            System.IO.StreamWriter sw = new System.IO.StreamWriter(errorLogFile, true);
+            bool shouldAppend = true; // Default to appending log message
+
+            // Check file size and decide whether to append or not
+            FileInfo info = new FileInfo(messagesFile);
+
+            if (info.Length > fileSizeLimit)
+            {
+                shouldAppend = false;
+            }
+
+
+            System.IO.StreamWriter sw = new System.IO.StreamWriter(errorLogFile, shouldAppend);
+
             sw.WriteLine("============================================================================");
             sw.WriteLine(DateTime.Now.ToString());
             sw.WriteLine("Error: " + ex.Message);
