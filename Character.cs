@@ -258,7 +258,7 @@ namespace TreeStats
                 }
 
                 // General attributes
-                req.AppendFormat("\"version\":\"{0}\",", 1);
+                req.AppendFormat("\"version\":\"{0}\",", "1.2");
                 req.AppendFormat("\"name\":\"{0}\",", cf.Name);
                 req.AppendFormat("\"race\":\"{0}\",", cf.Race);
                 req.AppendFormat("\"gender\":\"{0}\",", cf.Gender);
