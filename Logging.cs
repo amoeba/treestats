@@ -19,14 +19,29 @@ namespace TreeStats
 
         internal static void Init(string _messages, string _errors)
         {
-            loggingState = true;
-            messagesFile = _messages;
-            errorLogFile = _errors;
+            try
+            {
+                loggingState = true;
+                messagesFile = _messages;
+                errorLogFile = _errors;
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
+            }
         }
 
         internal static void Destroy()
         {
-            return;
+            try
+            {
+                messagesFile = null;
+                errorLogFile = null;
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
+            }
         }
 
         internal static void LogMessage(string message)

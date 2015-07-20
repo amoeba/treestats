@@ -15,12 +15,26 @@ namespace TreeStats
 
         public static void Init()
         {
-            lastSend = DateTime.MinValue;
+            try
+            {
+                lastSend = DateTime.MinValue;
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
+            }
         }
 
         public static void Destroy()
         {
-            lastSend = DateTime.MinValue;
+            try
+            {
+                lastSend = DateTime.MinValue;
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
+            }
         }
 
         public static void Create(string name, string password)

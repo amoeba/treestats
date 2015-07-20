@@ -42,11 +42,18 @@ namespace TreeStats
 
         internal static void Destroy()
         {
-            settingsFile = null;
-            trackedCharacters.Clear();
-            trackedCharacters = null;
-            accountName = null;
-            accountPassword = null;
+            try
+            {
+                settingsFile = null;
+                trackedCharacters.Clear();
+                trackedCharacters = null;
+                accountName = null;
+                accountPassword = null;
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
+            }
         }
 
         internal static void Save()
