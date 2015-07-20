@@ -456,7 +456,7 @@ namespace TreeStats
                 
                 lastMessage = Encryption.encrypt(req.ToString());
 
-                Logging.LogMessage(lastMessage);
+                Logging.LogMessage(req.ToString());
             }
             catch (Exception ex)
             {
