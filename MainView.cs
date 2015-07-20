@@ -21,7 +21,7 @@ namespace TreeStats
             Logging.LogMessage("ViewInit()");
 
             //Create view here
-            View = MyClasses.MetaViewWrappers.ViewSystemSelector.CreateViewResource(PluginCore.MyHost, "TreeStats.ViewXML.MainView.xml");
+            View = MyClasses.MetaViewWrappers.ViewSystemSelector.CreateViewResource(PluginCore.MyHost, "TreeStats.MainView.xml");
 
             btnSendUpdate = (MyClasses.MetaViewWrappers.IButton)View["btnSendUpdate"];
             btnSendUpdate.Hit += new EventHandler(btnSendUpdate_Hit);
