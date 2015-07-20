@@ -83,6 +83,8 @@ namespace TreeStats
                 };
 
 
+                lastSend = DateTime.MinValue;
+
                 // Set up timed updates
                 updateTimer = new WindowsTimer();
                 updateTimer.Interval = updateTimerInterval;
@@ -110,6 +112,8 @@ namespace TreeStats
 
                 dwordBlacklist.Clear();
                 dwordBlacklist = null;
+
+                lastSend = DateTime.MinValue;
 
                 if (updateTimer != null)
                 {
@@ -188,11 +192,11 @@ namespace TreeStats
             {
                 TimeSpan diff = DateTime.Now - lastSend;
 
-                if (diff.Seconds < updateTimerInterval) // Hard-coded 20 second
+                if (diff.Seconds < minimumSendInterval)
                 {
                     if (!isQuiet)
                     {
-                        Util.WriteToChat("Failed to send character: Please wait " + (updateTimerInterval - diff.Seconds).ToString() + "s before sending again. Thanks.");
+                        Util.WriteToChat("Failed to send character: Please wait " + (minimumSendInterval - diff.Seconds).ToString() + "s before sending again. Thanks.");
                     }
 
                     return;

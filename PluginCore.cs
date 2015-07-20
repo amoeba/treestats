@@ -14,6 +14,7 @@ namespace TreeStats
         // Allow for different base URIs
         // No trailing slash
         public static string urlBase = "http://treestats.net/";
+        //public static string urlBase = "http://treestats-staging.herokuapp.com/";
 
         protected override void Startup()
         {
@@ -25,6 +26,7 @@ namespace TreeStats
                 MyCore = Core;
 
                 // Plugin setup
+                Account.Init();
                 Character.Init(MyCore, MyHost);
                 Settings.Init(Path.ToString() + "\\settings.txt");
                 Util.Init(MyHost);
@@ -49,6 +51,7 @@ namespace TreeStats
                 MyHost = null;
                 MyCore = null;
 
+                Account.Destroy();
                 Character.Destroy();
                 Util.Destroy();
                 Settings.Destroy();
