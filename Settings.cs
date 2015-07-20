@@ -113,16 +113,7 @@ namespace TreeStats
 
                 while ((line = sr.ReadLine()) != null)
                 {
-                    Logging.LogMessage("Settings::Load(): line = \"" + line + "\"");
-
                     tokens = line.Split(':');
-
-                    Logging.LogMessage("Settings::Load(): tokens[0] = \"" + tokens[0] + "\"");
-
-                    if (tokens.Length == 2)
-                    {
-                        Logging.LogMessage("Settings::Load(): tokens[1] = \"" + tokens[1] + "\"");
-                    }
 
                     switch (tokens[0])
                     {
@@ -189,7 +180,6 @@ namespace TreeStats
                              * and was instead just 'Kolthar al Magus-WintersEbb'.
                              * This default route should catch old settings files.
                              */
-                            Logging.LogMessage("default case:");
 
                             keys = line.Split('#');
                             Logging.LogMessage("Found " + keys.Length.ToString() + " characters.");

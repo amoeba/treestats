@@ -131,15 +131,11 @@ namespace TreeStats
 
         static void btnAccountLogin_Hit(object sender, EventArgs e)
         {
-            Logging.LogMessage("btnAccountLogin_Hit");
-
             Account.Login(edtAccountName.Text, edtAccountPassword.Text);
         }
 
         static void btnAccountCreate_Hit(object sender, EventArgs e)
         {
-            Logging.LogMessage("btnAccountCreate_Hit");
-
             Account.Create(edtAccountName.Text, edtAccountPassword.Text);
         }
 
