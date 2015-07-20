@@ -165,20 +165,13 @@ namespace TreeStats
         {
             try
             {
-                Logging.LogMessage("ShouldLogin()");
-
                 if (Settings.useAccount == true &&
                     Settings.accountName.Length > 0 &&
                     Settings.accountPassword.Length > 0
                     )
                 {
-                    Logging.LogMessage("  true");
-
                     return true;
                 }
-                Logging.LogMessage("  false");
-                
-
             }
             catch (Exception ex) 
             {
