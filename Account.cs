@@ -76,7 +76,7 @@ namespace TreeStats
 
                     lastSend = DateTime.Now;
 
-                    client.UploadStringAsync(new Uri(PluginCore.urlBase + "/account/create"), "POST", message);
+                    client.UploadStringAsync(new Uri(PluginCore.urlBase + "account/create"), "POST", message);
                 }
 
                 
@@ -149,7 +149,7 @@ namespace TreeStats
 
                     lastSend = DateTime.Now;
 
-                    client.UploadStringAsync(new Uri(PluginCore.urlBase + "/account/login"), "POST", message);
+                    client.UploadStringAsync(new Uri(PluginCore.urlBase + "account/login"), "POST", message);
                 }
 
 
