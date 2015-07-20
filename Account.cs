@@ -13,6 +13,16 @@ namespace TreeStats
         public static DateTime lastSend;
         public static int minimumSendInterval = 5;
 
+        public static void Init()
+        {
+            lastSend = DateTime.MinValue;
+        }
+
+        public static void Destroy()
+        {
+            lastSend = DateTime.MinValue;
+        }
+
         public static void Create(string name, string password)
         {
             try
