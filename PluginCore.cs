@@ -13,13 +13,15 @@ namespace TreeStats
 
         // Allow for different base URIs
         // No trailing slash
-        public static string urlBase = "http://treestats.net/";
+        public static string urlBase;
         //public static string urlBase = "http://treestats-staging.herokuapp.com/";
 
         protected override void Startup()
         {
             try
             {
+                urlBase = "http://treestats.net/";
+
                 Logging.Init(Path.ToString() + "\\messages.txt", Path.ToString() + "\\errors.txt");
 
                 MyHost = Host;
