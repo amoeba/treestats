@@ -128,12 +128,14 @@ namespace TreeStats
                         {
                             if (e.Result.ToString() == "You are now logged in.") // Message body from web server
                             {
-                                Util.WriteToChat("You are now logged into TreeStats as " + Settings.accountName + ".");
+                                
 
                                 Settings.isLoggedIn = true;
                                 Settings.accountName = name;
                                 Settings.accountPassword = password;
                                 Settings.Save();
+
+                                Util.WriteToChat("You are now logged into TreeStats as " + Settings.accountName + ".");
 
                                 // Force an update now that we're logged in.
                                 Character.DoUpdate();
