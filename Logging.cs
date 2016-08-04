@@ -58,7 +58,7 @@ namespace TreeStats
                 // Check file size and decide whether to append or not
                 FileInfo info = new FileInfo(messagesFile);
 
-                if (info.Length > fileSizeLimit)
+                if (info.Exists && info.Length > fileSizeLimit)
                 {
                     shouldAppend = false;
                 }
@@ -87,7 +87,7 @@ namespace TreeStats
             // Check file size and decide whether to append or not
             FileInfo info = new FileInfo(messagesFile);
 
-            if (info.Length > fileSizeLimit)
+            if (info.Exists && info.Length > fileSizeLimit)
             {
                 shouldAppend = false;
             }
