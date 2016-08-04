@@ -28,7 +28,7 @@ namespace TreeStats
                 MyCore = Core;
 
                 // Plugin setup
-                Account.Init();
+                Account.Init(MyCore);
                 Character.Init(MyCore, MyHost);
                 Settings.Init(Path.ToString() + "\\settings.txt");
                 Util.Init(MyHost);
@@ -89,14 +89,13 @@ namespace TreeStats
                 }
                 else
                 {
-
-                    // Upload (if applicable)
+                    // Then upload (if we should)
                     if (Settings.ShouldSendCharacter(Core.CharacterFilter.Server + "-" + Core.CharacterFilter.Name))
                     {
                         Character.DoUpdate();
                     }
                 }
-            }
+                }
             catch (Exception ex)
             {
                 Logging.LogError(ex);

@@ -10,13 +10,15 @@ namespace TreeStats
 {
     public static class Account
     {
+        public static CoreManager MyCore { get; set; }
         public static DateTime lastSend;
         public static int minimumSendInterval = 5;
 
-        public static void Init()
+        public static void Init(CoreManager core)
         {
             try
             {
+                MyCore = core;
                 lastSend = DateTime.MinValue;
             }
             catch (Exception ex)
@@ -78,8 +80,11 @@ namespace TreeStats
                                 Settings.accountPassword = password;
                                 Settings.Save();
 
-                                // Force an upload now that we're logged in
-                                Character.DoUpdate();
+                                // And send the character if we're supposed to
+                                if (Settings.ShouldSendCharacter(MyCore.CharacterFilter.Server + "-" + MyCore.CharacterFilter.Name))
+                                {
+                                    Character.DoUpdate();
+                                }
                             }
                             else
                             {
@@ -151,8 +156,11 @@ namespace TreeStats
 
                                 Util.WriteToChat("You are now logged into TreeStats as " + Settings.accountName + ".");
 
-                                // Force an update now that we're logged in.
-                                Character.DoUpdate();
+                                // And send the character if we're supposed to
+                                if (Settings.ShouldSendCharacter(MyCore.CharacterFilter.Server + "-" + MyCore.CharacterFilter.Name))
+                                {
+                                    Character.DoUpdate();
+                                }
                             }
                             else
                             {
