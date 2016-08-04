@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("KolthSoft")]
 [assembly: AssemblyProduct("TreeStats")]
-[assembly: AssemblyCopyright("Copyright © KolthSoft 2015")]
+[assembly: AssemblyCopyright("Copyright © KolthSoft 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
