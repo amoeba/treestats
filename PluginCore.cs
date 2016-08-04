@@ -11,17 +11,13 @@ namespace TreeStats
         public static PluginHost MyHost;
         public static CoreManager MyCore;
 
-        // Allow for different base URIs
-        // No trailing slash
-        public static string urlBase;
-        //public static string urlBase = "http://treestats-staging.herokuapp.com/";
+        // Establish base URL for all queries
+        public static string urlBase = "http://treestats.net/";
 
         protected override void Startup()
         {
             try
             {
-                urlBase = "http://treestats.net/";
-
                 Logging.Init(Path.ToString() + "\\messages.txt", Path.ToString() + "\\errors.txt");
 
                 MyHost = Host;
