@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using WindowsTimer = System.Windows.Forms.Timer;
-
+using System.Globalization;
 using Decal.Adapter;
 using Decal.Adapter.Wrappers;
 
@@ -240,6 +240,11 @@ namespace TreeStats
                 character = cf.Name;
                 server = cf.Server;
 
+                // Prepare the en-US culture for string creation
+                // I use this because I want my dates to all be formatted as if
+                // the client using an en-US locale
+                CultureInfo culture_en_us = new CultureInfo("en-US");
+
                 // One long string stores the entire POST request body
                 // And the string is generated with StringBuilder
                 StringBuilder req = new StringBuilder();
@@ -287,7 +292,7 @@ namespace TreeStats
 
 
                 req.AppendFormat("\"deaths\":{0},", cf.Deaths);
-                req.AppendFormat("\"birth\":\"{0}\",", cf.Birth);
+                req.AppendFormat("\"birth\":\"{0}\",", cf.Birth.ToString(culture_en_us));
                 req.AppendFormat("\"total_xp\":{0},", cf.TotalXP);
                 req.AppendFormat("\"unassigned_xp\":{0},", cf.UnassignedXP);
                 req.AppendFormat("\"skill_credits\":{0},", cf.SkillPoints);
