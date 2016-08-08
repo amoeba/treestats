@@ -114,6 +114,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>MOVE /Y TreeStats.dll ..\Treestats.dll</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
