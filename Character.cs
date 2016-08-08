@@ -485,7 +485,7 @@ namespace TreeStats
                     {
                         if (e.Error != null)
                         {
-                            Util.WriteToChat("Upload Error: " + e.Error.Message);
+                            Util.WriteToChat("Update failed: " + e.Error.Message);
                         }
                         else
                         {
