@@ -19,7 +19,7 @@ namespace TreeStats
         // Updates
         public static DateTime lastSend;            // Throttle sending
         public static int minimumSendInterval = 5;  // Seconds
-        public static WindowsTimer updateTimer;     // Automatically send updates every hour
+        public static WindowsTimer updateTimer;     // Automatically send updates every `updateTimerInterval`
         public static int updateTimerInterval = 1000 * 60 * 60; // One hour
         public static bool sentServerPopulation;    // Only send server pop the first time (after login)
         
