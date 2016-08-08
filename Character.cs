@@ -172,38 +172,36 @@ namespace TreeStats
         {
             Logging.LogMessage("TryUpdate()");
 
-            /*
-             * Bail if we shouldn't send this character.
-             * Only applies to automatic updates
-             * ShouldSend(key) checks two conditions:
-             *   1. Are we auto-sending all characters?
-             *   2. Regardless of (1), is this character on the manual send list?
-             */
-
-            if (!isManual)
+            // Automatic 
+            if (!isManual) 
             {
-                if (!Settings.ShouldSendCharacter(Character.server + "-" + Character.character))
+                if (Settings.ShouldSendCharacter(Character.server + "-" + Character.character)) 
                 {
-                    return;
-                }
+                    DoUpdate();
+                } 
+
+            // Manual update
             }
-
-            if (lastSend != DateTime.MinValue) // Null check: Can't do null checks on DateTimes, so we do this
+            else
             {
-                TimeSpan diff = DateTime.Now - lastSend;
-
-                if (diff.Seconds < minimumSendInterval)
+                if (lastSend != DateTime.MinValue) // Null check: Can't do null checks on DateTimes, so we do this
                 {
-                    if (!isQuiet)
+                    TimeSpan diff = DateTime.Now - lastSend;
+
+                    if (diff.Seconds < minimumSendInterval) 
                     {
-                        Util.WriteToChat("Failed to send character: Please wait " + (minimumSendInterval - diff.Seconds).ToString() + "s before sending again. Thanks.");
+                        if (!isQuiet)
+                        {
+                            Util.WriteToChat("Failed to send character: Please wait " + (minimumSendInterval - diff.Seconds).ToString() + "s before sending again.");
+                        }
+
+                        return;
                     }
-
-                    return;
                 }
-            }
 
-            DoUpdate();
+                DoUpdate();
+
+            }
         }
 
 
