@@ -478,8 +478,6 @@ namespace TreeStats
                     return;
                 }
 
-                Util.WriteToChat("Sending character update.");
-
                 // Do the sending
                 using (var client = new WebClient())
                 {
