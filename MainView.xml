@@ -23,6 +23,14 @@
           <control progid="DecalControls.PushButton" name="btnAccountLogin" left="130" top="190" width="50" height="25" text="Login" />
         </control>
       </page>
+      <page label="Settings">
+        <control progid="DecalControls.FixedLayout" clipped="">
+          <control progid="DecalControls.StaticText" name="txtAccountInfo" left="10" top="10" width="340" height="100" text ="Use a custom TreeStats server URL if you are running your own instance of TreeStats and don't want to upload to treestats.net."/>
+          <control progid="DecalControls.CheckBox" name="chkUseCustomURL" left="10" top="60" width="200" height="20" text="Use Custom TreeStats Server" checked="false"/>
+          <control progid="DecalControls.StaticText" name="txtCustomURL" left="10" top="80" width="300" height="20" text="Custom Server URL:" />
+          <control progid="DecalControls.Edit" name="edtCustomURL" left="10" top="100" width="340" height="20" text ="" />
+        </control>
+      </page>
     </control>
   </control>
 </view>

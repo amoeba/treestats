@@ -469,6 +469,8 @@ namespace TreeStats
 
         internal static void SendCharacterInfo(string message)
         {
+            Uri sendUrl;
+
             try
             {
                 lastSend = DateTime.Now;
@@ -493,7 +495,15 @@ namespace TreeStats
                         }
                     };
 
-                    client.UploadStringAsync(endpoint, "POST", message);
+                    // Decide whether to use the default URL or a custom one
+                    if (Settings.useCustomURL) {
+                        sendUrl = new Uri(Settings.customURL);
+                        Logging.LogMessage("Using custom send URL of " + sendUrl.ToString());
+                    } else {
+                        sendUrl = endpoint;
+                    }
+
+                    client.UploadStringAsync(sendUrl, "POST", message);
                 }
             }
             catch (Exception ex)

@@ -16,6 +16,9 @@ namespace TreeStats
         static MyClasses.MetaViewWrappers.ITextBox edtAccountName;
         static MyClasses.MetaViewWrappers.ITextBox edtAccountPassword;
 
+        static MyClasses.MetaViewWrappers.ICheckBox chkUseCustomURL;
+        static MyClasses.MetaViewWrappers.ITextBox edtCustomURL;
+
         public static void ViewInit()
         {
             Logging.LogMessage("ViewInit()");
@@ -47,6 +50,12 @@ namespace TreeStats
             edtAccountName = (MyClasses.MetaViewWrappers.ITextBox)View["edtAccountName"];
             edtAccountPassword = (MyClasses.MetaViewWrappers.ITextBox)View["edtAccountPassword"];
 
+            chkUseCustomURL = (MyClasses.MetaViewWrappers.ICheckBox)View["chkUseCustomURL"];
+            chkUseCustomURL.Change += new EventHandler<MyClasses.MetaViewWrappers.MVCheckBoxChangeEventArgs>(chkUseCustomURL_Change);
+
+            edtCustomURL = (MyClasses.MetaViewWrappers.ITextBox)View["edtCustomURL"];
+            edtCustomURL.Change += new EventHandler<MyClasses.MetaViewWrappers.MVTextBoxChangeEventArgs>(edtCustomURL_Change);
+
             // Load UI state from settings
 
             if (Settings.autoMode == true)
@@ -67,6 +76,16 @@ namespace TreeStats
             if (Settings.accountPassword != null)
             {
                 edtAccountPassword.Text = Settings.accountPassword;
+            }
+
+            if (Settings.useCustomURL == true)
+            {
+                chkUseCustomURL.Checked = true;
+            }
+
+            if (Settings.customURL != null)
+            {
+                edtCustomURL.Text = Settings.customURL;
             }
         }
 
@@ -139,5 +158,26 @@ namespace TreeStats
             Account.Create(edtAccountName.Text, edtAccountPassword.Text);
         }
 
+
+
+
+        static void chkUseCustomURL_Change(object sender, MyClasses.MetaViewWrappers.MVCheckBoxChangeEventArgs e)
+        {
+            if (e.Checked)
+            {
+                Settings.useCustomURL = true;
+                Settings.Save();
+            }
+            else
+            {
+                Settings.useCustomURL = false;
+                Settings.Save();
+            }
+        }
+        static void edtCustomURL_Change(object sender, MyClasses.MetaViewWrappers.MVTextBoxChangeEventArgs e)
+        {
+            Settings.customURL = e.Text;
+            Settings.Save();
+        }
     }
 }

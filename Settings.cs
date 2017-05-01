@@ -20,6 +20,8 @@ namespace TreeStats
         public static string accountName;
         public static string accountPassword;
         public static bool isLoggedIn;
+        public static bool useCustomURL;
+        public static string customURL;
 
         internal static void Init(string _settingsFileName)
         {
@@ -33,6 +35,8 @@ namespace TreeStats
                 accountName = "";
                 accountPassword = "";
                 isLoggedIn = false;
+                useCustomURL = false;
+                customURL = "";
             }
             catch (Exception ex)
             {
@@ -49,6 +53,7 @@ namespace TreeStats
                 trackedCharacters = null;
                 accountName = null;
                 accountPassword = null;
+                customURL = null;
             }
             catch (Exception ex)
             {
@@ -91,6 +96,10 @@ namespace TreeStats
 
                     sw.WriteLine(characters);
                 }
+
+                // Write custom URL
+                sw.WriteLine("useCustomURL:", useCustomURL.ToString());
+                sw.WriteLine("customURL:" + customURL);
 
                 sw.Close();
             }
@@ -178,6 +187,26 @@ namespace TreeStats
                             accountName = keys[0];
                             accountPassword = keys[1];
 
+                            break;
+                        case "useCustomURL":
+                            if (tokens.Length == 2)
+                            {
+                                if (tokens[1] == "True")
+                                {
+                                    useCustomURL = true;
+                                }
+                                else if (tokens[1] == "False")
+                                {
+                                    useCustomURL = false;
+                                }
+                            }
+                            
+                            break;
+                        case "customURL":
+                            if (tokens.Length == 2)
+                            {
+                                customURL = tokens[1];
+                            }
                             break;
                         default:
                             /* Handle legacy support of old settings file format:

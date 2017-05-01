@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5FA205D7-A899-400D-B6DA-3B18C02BE599}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -35,21 +35,21 @@
   <ItemGroup>
     <Reference Include="Decal.Adapter, Version=2.9.7.5, Culture=neutral, PublicKeyToken=bd1c8ce002ce221e, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Decal\Decal.Adapter.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Decal 3.0\Decal.Adapter.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Decal.FileService, Version=2.9.7.5, Culture=neutral, PublicKeyToken=bd1c8ce002ce221e, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Decal\Decal.FileService.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Decal 3.0\Decal.FileService.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Decal.Interop.Filters, Version=2.9.7.5, Culture=neutral, PublicKeyToken=481f17d392f1fb65, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Decal\.NET 2.0 PIA\Decal.Interop.Filters.DLL</HintPath>
+      <HintPath>C:\Program Files (x86)\Decal 3.0\.NET 2.0 PIA\Decal.Interop.Filters.DLL</HintPath>
     </Reference>
     <Reference Include="Decal.Interop.Inject, Version=2.9.7.5, Culture=neutral, PublicKeyToken=481f17d392f1fb65, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Decal\.NET 2.0 PIA\Decal.Interop.Inject.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Decal 3.0\.NET 2.0 PIA\Decal.Interop.Inject.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -58,7 +58,7 @@
     <Reference Include="System.XML" />
     <Reference Include="VirindiViewService, Version=1.0.0.47, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\VirindiPlugins\VirindiViewService\VirindiViewService.dll</HintPath>
+      <HintPath>C:\Games\VirindiPlugins\VirindiViewService\VirindiViewService.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -85,15 +85,6 @@
   <ItemGroup>
     <COMReference Include="Decal">
       <Guid>{FF7F5F6D-34E0-4B6F-B3BB-8141DE2EF732}</Guid>
-      <VersionMajor>2</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <Private>False</Private>
-    </COMReference>
-    <COMReference Include="DecalNet">
-      <Guid>{572B87C4-93BD-46B3-A291-CD58181D25DC}</Guid>
       <VersionMajor>2</VersionMajor>
       <VersionMinor>0</VersionMinor>
       <Lcid>0</Lcid>
