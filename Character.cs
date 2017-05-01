@@ -294,7 +294,7 @@ namespace TreeStats
                 req.AppendFormat("\"total_xp\":{0},", cf.TotalXP);
                 req.AppendFormat("\"unassigned_xp\":{0},", cf.UnassignedXP);
                 req.AppendFormat("\"skill_credits\":{0},", cf.SkillPoints);
-
+                req.AppendFormat("\"age\":{0},", cf.Age);
 
                 // Luminance XP
 
