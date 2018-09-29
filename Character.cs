@@ -9,6 +9,22 @@ using Decal.Adapter.Wrappers;
 
 namespace TreeStats
 {
+    public struct AllegianceInfoRecord 
+    {
+        public String name;
+        public int rank;
+        public int race;
+        public int gender;
+
+        public AllegianceInfoRecord(String _name, int _rank, int _race, int _gender)
+        {
+            name = _name;
+            rank = _rank;
+            race = _race;
+            gender = _gender;
+        }                   
+    }                      
+
     public static class Character
     {
         public static Uri endpoint;
@@ -33,11 +49,18 @@ namespace TreeStats
 
         public static string character;
         public static string server;
-        public static string allegianceName;
         public static int currentTitle;
         public static List<Int32> titlesList;
         public static Int64 luminance_earned;
         public static Int64 luminance_total;
+
+        // Allegiance information
+        public static string allegianceName;
+        public static int allegianceSize;
+        public static int followers;
+        public static AllegianceInfoRecord monarch;
+        public static AllegianceInfoRecord patron;
+        public static List<AllegianceInfoRecord> vassals;
 
         // Store character properties from GameEvent/Login Character message
         public static Dictionary<Int32, Int32> characterProperties;
@@ -70,6 +93,7 @@ namespace TreeStats
                 allegianceName = "";
                 luminance_earned = -1;
                 luminance_total = -1;
+                vassals = new List<AllegianceInfoRecord>();
 
                 // Store all returned character properties from the Login Player event
                 characterProperties = new Dictionary<Int32, Int32>();
@@ -109,7 +133,10 @@ namespace TreeStats
 
                 characterProperties.Clear();
                 characterProperties = null;
-
+                
+                vassals.Clear();
+                vassals = null;
+                
                 dwordBlacklist.Clear();
                 dwordBlacklist = null;
 
@@ -223,19 +250,11 @@ namespace TreeStats
         {
             try
             {
-                if (MyCore.CharacterFilter.Name == null)
-                {
-                    Logging.LogMessage("Core.CharacterFilter.Name was null. This is really bad.");
-                    
-                    return;
-                }
-
                 // Declare the fileservice for later use
                 Decal.Adapter.Wrappers.CharacterFilter cf = MyCore.CharacterFilter;
                 Decal.Filters.FileService fs = CoreManager.Current.FileService as Decal.Filters.FileService;
 
                 // Save character and server for later since we're going to use this alot
-                character = cf.Name;
                 server = cf.Server;
 
                 // Prepare the en-US culture for string creation
@@ -262,7 +281,7 @@ namespace TreeStats
 
                 // General attributes
                 req.AppendFormat("\"version\":\"{0}\",", 2);
-                req.AppendFormat("\"name\":\"{0}\",", cf.Name);
+                req.AppendFormat("\"name\":\"{0}\",", character);
                 req.AppendFormat("\"race\":\"{0}\",", cf.Race);
                 req.AppendFormat("\"gender\":\"{0}\",", cf.Gender);
                 req.AppendFormat("\"level\":{0},", cf.Level);
@@ -274,7 +293,7 @@ namespace TreeStats
                 }
 
                 req.AppendFormat("\"rank\":{0},", cf.Rank);
-                req.AppendFormat("\"followers\":{0},", cf.Followers);
+                req.AppendFormat("\"followers\":{0},", followers);
                 req.AppendFormat("\"server\":\"{0}\",", cf.Server);
 
                 /* Only append server population if it hasn't been sent yet (we just logged in).
@@ -294,7 +313,7 @@ namespace TreeStats
                 req.AppendFormat("\"total_xp\":{0},", cf.TotalXP);
                 req.AppendFormat("\"unassigned_xp\":{0},", cf.UnassignedXP);
                 req.AppendFormat("\"skill_credits\":{0},", cf.SkillPoints);
-                req.AppendFormat("\"age\":{0},", cf.Age);
+                //req.AppendFormat("\"age\":{0},", cf.Age);
 
                 // Luminance XP
 
@@ -378,9 +397,10 @@ namespace TreeStats
 
                 try
                 {
-                    if (cf.Monarch != null)
+                    if (monarch.name != null)
                     {
-                        req.AppendFormat("\"monarch\":{{\"name\":\"{0}\",\"race\":{1},\"rank\":{2},\"gender\":{3},\"followers\":{4}}},", cf.Monarch.Name, cf.Monarch.Race, cf.Monarch.Rank, cf.Monarch.Gender, cf.MonarchFollowers);
+                        req.AppendFormat("\"monarch\":{{\"name\":\"{0}\",\"race\":{1},\"rank\":{2},\"gender\":{3},\"followers\":{4}}},", 
+                            monarch.name, monarch.race, monarch.rank, monarch.gender, allegianceSize);
                     }
                 }
                 catch (Exception ex)
@@ -390,9 +410,10 @@ namespace TreeStats
 
                 try
                 {
-                    if (cf.Patron != null)
+                    if (patron.name != null)
                     {
-                        req.AppendFormat("\"patron\":{{\"name\":\"{0}\",\"race\":{1},\"rank\":{2},\"gender\":{3}}},", cf.Patron.Name, cf.Patron.Race, cf.Patron.Rank, cf.Patron.Gender);
+                        req.AppendFormat("\"patron\":{{\"name\":\"{0}\",\"race\":{1},\"rank\":{2},\"gender\":{3}}},", 
+                            patron.name, patron.race, patron.rank, patron.gender);
                     }
                 }
                 catch (Exception ex)
@@ -402,20 +423,26 @@ namespace TreeStats
 
 
                 // Vassals
-                if (cf.Vassals != null && cf.Vassals.Count > 0)
+                try
                 {
-                    req.Append("\"vassals\":[");
-                    string vassal_format = "{{\"name\":\"{0}\",\"race\":{1},\"rank\":{2},\"gender\":{3}}},";
-
-                    foreach (AllegianceInfoWrapper vassal in cf.Vassals)
+                    if (vassals.Count > 0)
                     {
-                        req.AppendFormat(vassal_format, vassal.Name, vassal.Race, vassal.Rank, vassal.Gender);
+                        req.Append("\"vassals\":[");
+                        string vassal_format = "{{\"name\":\"{0}\",\"race\":{1},\"rank\":{2},\"gender\":{3}}},";
+
+                        foreach (AllegianceInfoRecord vassal in vassals)
+                        {
+                            req.AppendFormat(vassal_format, vassal.name, vassal.race, vassal.rank, vassal.gender);
+                        }
+
+                        req.Remove(req.Length - 1, 1);
+                        req.Append("],");
                     }
-
-                    req.Remove(req.Length - 1, 1);
-                    req.Append("],");
                 }
-
+                catch (Exception ex)
+                {
+                    Logging.LogError(ex);
+                }
 
                 // Titles
                 // Add titles to message if we have them
@@ -550,11 +577,16 @@ namespace TreeStats
                 MessageStruct props = e.Message.Struct("properties");
                 MessageStruct dwords = props.Struct("dwords");
                 MessageStruct qwords = props.Struct("qwords");
+                MessageStruct strings = props.Struct("strings");
 
                 MessageStruct tmpStruct;
 
                 Int32 tmpKey;
                 Int32 tmpValue;
+
+                // Process strings to extract character name
+                // This is a workaround for a bug in GDLE
+                character = strings.Struct(0).Value<string>("value");
 
                 // Process DWORDS
                 for (int i = 0; i < dwords.Count; i++)
@@ -602,7 +634,86 @@ namespace TreeStats
         {
             try
             {
+                // Empty out possibly stale vassal information
+                monarch = new AllegianceInfoRecord();
+                patron = new AllegianceInfoRecord();
+                if (vassals != null)
+                {
+                    vassals.Clear();
+                } else
+                {
+                    vassals = new List<AllegianceInfoRecord>();
+                }
+
+                // General info
                 allegianceName = e.Message.Value<string>("allegianceName");
+                allegianceSize = e.Message.Value<Int32>("allegianceSize");
+                followers = e.Message.Value<Int32>("followers");
+
+                // records
+                MessageStruct records = e.Message.Struct("records");
+                MessageStruct record;
+                Int32 treeParent;
+                Int32 id;
+                String name;
+                int rank;
+                int race;
+                int gender;
+
+                /* Determine monarch, patron, and vassals from the records struct
+                 * 
+                 * I'm not sure if all of this is strictly necessary but it works. The main
+                 * thing adding complexity is the logic for finding the patron. I could
+                 * make this simpler if I knew that the records vector was in tree order.
+                 */
+                Dictionary<int, AllegianceInfoRecord> recs = new Dictionary<int, AllegianceInfoRecord>();
+                Dictionary<int, int> parents = new Dictionary<int, int>();
+
+                int currentId = MyCore.CharacterFilter.Id;
+
+                for (int i = 0; i < records.Count; i++)
+                {
+
+                    record = records.Struct(i);
+
+                    treeParent = record.Value<Int32>("treeParent");
+                    id = record.Value<Int32>("character");
+                    name = record.Value<String>("name");
+                    rank = record.Value<int>("rank");
+                    race = record.Value<int>("race");
+                    gender = record.Value<int>("gender");
+
+                    parents[id] = treeParent;
+                    recs.Add(id, new AllegianceInfoRecord(name, rank, race, gender));
+
+                    // Vassals
+                    if (treeParent == currentId)
+                    {
+                        vassals.Add(new AllegianceInfoRecord(name, rank, race, gender));
+                    }
+                    // Monarch
+                    else if (treeParent <= 1)
+                    {
+                        monarch = new AllegianceInfoRecord(name, rank, race, gender);
+                    }
+                }
+
+                // Wrap up by finding the patron
+                // Easy case: Patron is self because self is monarch too
+                if (parents[currentId] <= 1) // <=1 is due to a bug in GDLE
+                {
+                    patron = recs[currentId];
+                }
+                // General case, patron linked in the list of records
+                else
+                {
+                    patron = recs[parents[currentId]];
+                }
+
+                recs.Clear();
+                recs = null;
+                parents.Clear();
+                parents = null;
             }
             catch (Exception ex)
             {
