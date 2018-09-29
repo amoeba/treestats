@@ -2,3 +2,4 @@
 /obj
 *.suo
 .DS_Store
+.vs
