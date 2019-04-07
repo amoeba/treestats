@@ -29,7 +29,7 @@ namespace TreeStats
                 Settings.Init(Path.ToString() + "\\settings.txt");
                 Util.Init(MyHost);
                 Settings.Load();
-                MainView.ViewInit();
+                MainView.ViewInit(Path.ToString() + "//icon.bmp");
 
                 // Bind events
                 Core.CharacterFilter.LoginComplete += new EventHandler(CharacterFilter_LoginComplete);

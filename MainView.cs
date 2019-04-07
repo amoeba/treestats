@@ -19,12 +19,18 @@ namespace TreeStats
         static MyClasses.MetaViewWrappers.ICheckBox chkUseCustomURL;
         static MyClasses.MetaViewWrappers.ITextBox edtCustomURL;
 
-        public static void ViewInit()
+        public static void ViewInit(string icon_path)
         {
             Logging.LogMessage("ViewInit()");
 
             //Create view here
             View = MyClasses.MetaViewWrappers.ViewSystemSelector.CreateViewResource(PluginCore.MyHost, "TreeStats.MainView.xml");
+
+            // Set custom icon
+            if (View.ViewType == MyClasses.MetaViewWrappers.ViewSystemSelector.eViewSystem.VirindiViewService)
+            {
+                SetCustomIcon(icon_path);
+            }
 
             btnSendUpdate = (MyClasses.MetaViewWrappers.IButton)View["btnSendUpdate"];
             btnSendUpdate.Hit += new EventHandler(btnSendUpdate_Hit);
@@ -178,6 +184,22 @@ namespace TreeStats
         {
             Settings.customURL = e.Text;
             Settings.Save();
+        }
+
+        static void SetCustomIcon(string icon_path)
+        {
+            try
+            {
+                System.Drawing.Bitmap icon_bmp = new System.Drawing.Bitmap(icon_path);
+                VirindiViewService.ACImage icon = new VirindiViewService.ACImage(icon_bmp);
+
+                MyClasses.MetaViewWrappers.VirindiViewServiceHudControls.View v = (MyClasses.MetaViewWrappers.VirindiViewServiceHudControls.View)View;
+                v.Underlying.Icon = icon;
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
+            }
         }
     }
 }
