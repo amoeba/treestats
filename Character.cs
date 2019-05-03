@@ -90,7 +90,7 @@ namespace TreeStats
                 // General character info
                 currentTitle = -1;
                 titlesList = new List<Int32>();
-                allegianceName = "";
+                allegianceName = null;
                 luminance_earned = -1;
                 luminance_total = -1;
                 vassals = new List<AllegianceInfoRecord>();
@@ -134,7 +134,11 @@ namespace TreeStats
                 characterProperties.Clear();
                 characterProperties = null;
                 
-                vassals.Clear();
+                if (vassals != null)
+                {
+                    vassals.Clear();
+                }
+
                 vassals = null;
                 
                 dwordBlacklist.Clear();
@@ -287,7 +291,7 @@ namespace TreeStats
                 req.AppendFormat("\"level\":{0},", cf.Level);
 
                 // Add allegiance name if we've gotten it in a message
-                if (allegianceName.Length > 0)
+                if (allegianceName != null)
                 {
                     req.AppendFormat("\"allegiance_name\":\"{0}\",", allegianceName);
                 }
@@ -316,7 +320,6 @@ namespace TreeStats
                 //req.AppendFormat("\"age\":{0},", cf.Age);
 
                 // Luminance XP
-
                 if (luminance_earned != -1)
                 {
                     req.AppendFormat("\"luminance_earned\":{0},", luminance_earned);
@@ -394,7 +397,6 @@ namespace TreeStats
 
                 // Monarch & Patron Information
                 // We wrap in try/catch because AllegianceInfoWrapper behaves oddly (Is not null when it should be? Not sure on this.)
-
                 try
                 {
                     if (monarch.name != null)
@@ -632,33 +634,23 @@ namespace TreeStats
 
         internal static void ProcessAllegianceInfoMessage(NetworkMessageEventArgs e)
         {
+            monarch = new AllegianceInfoRecord();
+            patron = new AllegianceInfoRecord();
+            vassals = new List<AllegianceInfoRecord>();
+            Dictionary<int, AllegianceInfoRecord> recs = new Dictionary<int, AllegianceInfoRecord>();
+            Dictionary<int, int> parents = new Dictionary<int, int>();
+
             try
             {
-                // Empty out possibly stale vassal information
-                monarch = new AllegianceInfoRecord();
-                patron = new AllegianceInfoRecord();
-                if (vassals != null)
-                {
-                    vassals.Clear();
-                } else
-                {
-                    vassals = new List<AllegianceInfoRecord>();
-                }
-
-                // General info
+                // Take down general info
                 allegianceName = e.Message.Value<string>("allegianceName");
                 allegianceSize = e.Message.Value<Int32>("allegianceSize");
                 followers = e.Message.Value<Int32>("followers");
 
-                // records
+                // Process the records struct, which has all the members of the
+                // allegiance
                 MessageStruct records = e.Message.Struct("records");
                 MessageStruct record;
-                Int32 treeParent;
-                Int32 id;
-                String name;
-                int rank;
-                int race;
-                int gender;
 
                 /* Determine monarch, patron, and vassals from the records struct
                  * 
@@ -666,58 +658,82 @@ namespace TreeStats
                  * thing adding complexity is the logic for finding the patron. I could
                  * make this simpler if I knew that the records vector was in tree order.
                  */
-                Dictionary<int, AllegianceInfoRecord> recs = new Dictionary<int, AllegianceInfoRecord>();
-                Dictionary<int, int> parents = new Dictionary<int, int>();
+
 
                 int currentId = MyCore.CharacterFilter.Id;
 
                 for (int i = 0; i < records.Count; i++)
                 {
-
                     record = records.Struct(i);
 
-                    treeParent = record.Value<Int32>("treeParent");
-                    id = record.Value<Int32>("character");
-                    name = record.Value<String>("name");
-                    rank = record.Value<int>("rank");
-                    race = record.Value<int>("race");
-                    gender = record.Value<int>("gender");
+                    Logging.LogMessage("Setting treeparent in parents dict.");
 
-                    parents[id] = treeParent;
-                    recs.Add(id, new AllegianceInfoRecord(name, rank, race, gender));
+                    // Build up the parents dict as we go
+                    parents[record.Value<int>("character")] = record.Value<int>("treeParent");
 
-                    // Vassals
-                    if (treeParent == currentId)
+                    // Save the record for later
+                    recs.Add(
+                        record.Value<int>("character"), 
+                        new AllegianceInfoRecord(record.Value<string>("name"), 
+                        record.Value<int>("rank"),
+                        record.Value<int>("race"),
+                        record.Value<int>("gender")));
+
+                    // Add to vassals if appropriate
+                    if (record.Value<int>("treeParent") == currentId)
                     {
-                        vassals.Add(new AllegianceInfoRecord(name, rank, race, gender));
+                        vassals.Add(
+                            new AllegianceInfoRecord(
+                                record.Value<string>("name"), 
+                                record.Value<int>("rank"), 
+                                record.Value<int>("race"), 
+                                record.Value<int>("gender")));
                     }
-                    // Monarch
-                    else if (treeParent <= 1)
+
+                    // Set as monarch if appropriate
+                    else if (record.Value<int>("treeParent") <= 1)
                     {
-                        monarch = new AllegianceInfoRecord(name, rank, race, gender);
+                        monarch = new AllegianceInfoRecord(
+                            record.Value<string>("name"), 
+                            record.Value<int>("rank"),
+                            record.Value<int>("race"), 
+                            record.Value<int>("gender"));
                     }
                 }
 
-                // Wrap up by finding the patron
-                // Easy case: Patron is self because self is monarch too
-                if (parents[currentId] <= 1) // <=1 is due to a bug in GDLE
+                // Should stop now if records is empty, because we aren't in an allegiance
+
+
+                Logging.LogMessage("Printing records");
+
+                foreach (KeyValuePair<int, AllegianceInfoRecord> rec in recs)
                 {
-                    patron = recs[currentId];
+                    Logging.LogMessage(rec.Key.ToString() + " : " + rec.Value.name);  
                 }
-                // General case, patron linked in the list of records
-                else
+
+                Logging.LogMessage("Printing parents");
+
+                foreach (KeyValuePair<int, int> rec in parents)
+                {
+                    Logging.LogMessage(rec.Key.ToString() + ": " + rec.Value.ToString());
+                }
+
+                // Set patron
+                if (parents.Count > 0 && recs.ContainsKey(parents[currentId]))
                 {
                     patron = recs[parents[currentId]];
                 }
-
-                recs.Clear();
-                recs = null;
-                parents.Clear();
-                parents = null;
             }
             catch (Exception ex)
             {
                 Logging.LogError(ex);
+            }
+            finally
+            {
+                recs.Clear();
+                recs = null;
+                parents.Clear();
+                parents = null;
             }
         }
 
