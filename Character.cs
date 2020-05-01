@@ -538,6 +538,7 @@ namespace TreeStats
                         sendUrl = endpoint;
                     }
 
+                    client.Headers.Add("User-Agent", "TreeStats v" + typeof(PluginCore).Assembly.GetName().Version.ToString());
                     client.UploadStringAsync(sendUrl, "POST", message);
                 }
             }
