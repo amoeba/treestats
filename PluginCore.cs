@@ -1,5 +1,6 @@
 ﻿using System;
 
+using System.Net;
 using Decal.Adapter;
 using Decal.Adapter.Wrappers;
 
@@ -13,6 +14,8 @@ namespace TreeStats
 
         // Establish base URL for all queries
         public static string urlBase = "http://treestats.net/";
+        // Track IP
+        public static string ipAddress;
 
         protected override void Startup()
         {
@@ -35,6 +38,9 @@ namespace TreeStats
                 Core.CharacterFilter.LoginComplete += new EventHandler(CharacterFilter_LoginComplete);
                 Core.CommandLineText += new EventHandler<ChatParserInterceptEventArgs>(Core_CommandLineText);
                 Core.EchoFilter.ServerDispatch += new EventHandler<NetworkMessageEventArgs>(EchoFilter_ServerDispatch);
+
+                // Get local IP address for detecting unique uploaders
+                GetIPAdress();
             }
             catch (Exception ex)
             {
@@ -174,6 +180,29 @@ namespace TreeStats
                     }
                 }
 
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
+            }
+        }
+
+        private void GetIPAdress()
+        {
+            try
+            {
+                var host = Dns.GetHostEntry(Dns.GetHostName());
+
+                foreach (var ip in host.AddressList)
+                {
+                    if (!(ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork))
+                    {
+                        continue;
+                    }
+
+                    Logging.LogMessage("IP address is " + ip.ToString());
+                    ipAddress = ip.ToString();
+                }
             }
             catch (Exception ex)
             {

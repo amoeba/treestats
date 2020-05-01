@@ -282,6 +282,12 @@ namespace TreeStats
                     Logging.LogMessage("Appending account name " + Settings.accountName + " to this upload.");
                     req.AppendFormat("\"account_name\":\"{0}\",", Settings.accountName);
                 }
+                
+                // Add in IP address if we have it
+                if (PluginCore.ipAddress != null)
+                {
+                    req.AppendFormat("\"ip\":\"{0}\",", PluginCore.ipAddress);
+                }
 
                 // General attributes
                 req.AppendFormat("\"version\":\"{0}\",", 2);
