@@ -1,6 +1,7 @@
 ﻿using System;
-
 using System.Net;
+using System.IO;
+
 using Decal.Adapter;
 using Decal.Adapter.Wrappers;
 
@@ -21,7 +22,8 @@ namespace TreeStats
         {
             try
             {
-                Logging.Init(Path.ToString() + "\\messages.txt", Path.ToString() + "\\errors.txt");
+                string dir = setupPluginDir();
+                Logging.Init(dir + "\\messages.txt", dir + "\\errors.txt");
 
                 MyHost = Host;
                 MyCore = Core;
@@ -29,7 +31,7 @@ namespace TreeStats
                 // Plugin setup
                 Account.Init(MyCore);
                 Character.Init(MyCore, MyHost);
-                Settings.Init(Path.ToString() + "\\settings.txt");
+                Settings.Init(dir + "\\settings.txt");
                 Util.Init(MyHost);
                 Settings.Load();
                 MainView.ViewInit(Path.ToString() + "//icon.bmp");
@@ -74,6 +76,49 @@ namespace TreeStats
             }
         }
 
+        /**
+         * Attempt to find a suitable place to store log and setting files and ensure
+         * that directory exists.
+         * 
+         * Falls back to the same folder as the TreeStats DLL.
+         */
+        string setupPluginDir()
+        {
+            string dir = null;
+
+            try {
+                dir = string.Format(@"{0}\{1}\{2}",
+                    Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+                    "Decal Plugins",
+                    "TreeStats");
+
+                Directory.CreateDirectory(dir);
+            }
+            catch (Exception ex)
+            {
+                // noop
+            }
+            finally
+            {
+                if (dir == null)
+                {
+                    dir = Path;
+                }
+            }
+
+            try
+            {
+                if (!Directory.Exists(dir))
+                {
+                    dir = Path;
+                }
+            } catch (Exception ex)
+            {
+                // noop
+            }
+
+            return dir;
+        }
         void CharacterFilter_LoginComplete(object sender, EventArgs e)
         {
             try
