@@ -164,7 +164,7 @@ namespace TreeStats
                     {
                         Settings.ShowHelp();
                     }
-                    else if (tokens.Length == 2)
+                    else if (tokens.Length >= 2)
                     {
                         string command = tokens[1];
 
@@ -192,6 +192,34 @@ namespace TreeStats
                         {
                             Settings.RemoveCharacter(Core.CharacterFilter.Server + "-" + Core.CharacterFilter.Name);
                             Settings.Save();
+                        }
+                        else if (command == "account")
+                        {
+                            // @treestats login name password
+                            if (tokens.Length < 5)
+                            {
+                                Settings.ShowHelp();
+
+                                return;
+                            }
+
+                            string subcommand = tokens[2];
+
+                            if (subcommand == "create")
+                            {
+                                Account.Create(tokens[3], tokens[4]);
+
+                                return;
+                            } 
+                            else if (subcommand == "login")
+                            {
+                                Account.Login(tokens[3], tokens[4]);
+                                Settings.useAccount = true;
+
+                                return;
+
+                            }
+
                         }
                     }
                 }

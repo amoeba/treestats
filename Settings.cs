@@ -343,7 +343,7 @@ namespace TreeStats
             try
             {
                 Util.WriteToChat("Treestats help:");
-                Util.WriteToChat("Available commands: help, send, mode, addchar, removechar");
+                Util.WriteToChat("Available commands: help, send, mode, addchar, removechar, account");
                 Util.WriteToChat("");
                 Util.WriteToChat("help: Shows this message.");
                 Util.WriteToChat("send: Sends the currently logged-in character (Max once per minute), no matter what other settings you have set.");
@@ -352,6 +352,9 @@ namespace TreeStats
                 Util.WriteToChat("     manual: Only upload characters you manually add. See add/rem.");
                 Util.WriteToChat("add: Enables tracking for the currently logged in character.");
                 Util.WriteToChat("rem: Removes tracking for the currently logged in character.");
+                Util.WriteToChat("account: Create or log into an account.");
+                Util.WriteToChat("     create {name} {password}: Create an account.");
+                Util.WriteToChat("     login {name} {password}. Log into an account.");
             }
             catch (Exception ex)
             {
