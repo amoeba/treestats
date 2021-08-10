@@ -19,6 +19,8 @@ namespace TreeStats
         static MyClasses.MetaViewWrappers.ICheckBox chkUseCustomURL;
         static MyClasses.MetaViewWrappers.ITextBox edtCustomURL;
 
+        static MyClasses.MetaViewWrappers.ICheckBox chkSilent;
+
         public static void ViewInit(string icon_path)
         {
             Logging.LogMessage("ViewInit()");
@@ -62,6 +64,9 @@ namespace TreeStats
             edtCustomURL = (MyClasses.MetaViewWrappers.ITextBox)View["edtCustomURL"];
             edtCustomURL.Change += new EventHandler<MyClasses.MetaViewWrappers.MVTextBoxChangeEventArgs>(edtCustomURL_Change);
 
+            chkSilent = (MyClasses.MetaViewWrappers.ICheckBox)View["chkSilent"];
+            chkSilent.Change += new EventHandler<MyClasses.MetaViewWrappers.MVCheckBoxChangeEventArgs>(chkSilent_Change);
+
             // Load UI state from settings
 
             if (Settings.autoMode == true)
@@ -93,6 +98,11 @@ namespace TreeStats
             {
                 edtCustomURL.Text = Settings.customURL;
             }
+
+            if (Settings.silent == true)
+            {
+                chkSilent.Checked = true;
+            }
         }
 
         public static void ViewDestroy()
@@ -104,6 +114,7 @@ namespace TreeStats
             btnSendUpdate = null;
             btnSendUpdate = null;
             chkUseAccount = null;
+            chkSilent = null;
 
             View.Dispose();
         }
@@ -199,6 +210,20 @@ namespace TreeStats
             catch (Exception ex)
             {
                 Logging.LogError(ex);
+            }
+        }
+
+        static void chkSilent_Change(object sender, MyClasses.MetaViewWrappers.MVCheckBoxChangeEventArgs e)
+        {
+            if (e.Checked)
+            {
+                Settings.silent = true;
+                Settings.Save();
+            }
+            else
+            {
+                Settings.silent = false;
+                Settings.Save();
             }
         }
     }

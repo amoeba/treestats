@@ -22,6 +22,7 @@ namespace TreeStats
         public static bool isLoggedIn;
         public static bool useCustomURL;
         public static string customURL;
+        public static bool silent;
 
         internal static void Init(string _settingsFileName)
         {
@@ -37,6 +38,7 @@ namespace TreeStats
                 isLoggedIn = false;
                 useCustomURL = false;
                 customURL = "";
+                silent = false;
             }
             catch (Exception ex)
             {
@@ -98,8 +100,11 @@ namespace TreeStats
                 }
 
                 // Write custom URL
-                sw.WriteLine("useCustomURL:", useCustomURL.ToString());
+                sw.WriteLine("useCustomURL:" + useCustomURL.ToString());
                 sw.WriteLine("customURL:" + customURL);
+
+                // Silent
+                sw.WriteLine("silent:" + silent.ToString());
 
                 sw.Close();
             }
@@ -206,6 +211,19 @@ namespace TreeStats
                             if (tokens.Length == 2)
                             {
                                 customURL = tokens[1];
+                            }
+                            break;
+                        case "silent":
+                            if (tokens.Length == 2)
+                            {
+                                if (tokens[1] == "True")
+                                {
+                                    silent = true;
+                                }
+                                else if (tokens[1] == "False")
+                                {
+                                    silent = false;
+                                }
                             }
                             break;
                         default:

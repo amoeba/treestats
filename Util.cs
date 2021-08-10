@@ -25,6 +25,11 @@ namespace TreeStats
 
         public static void WriteToChat(string message)
         {
+            if (Settings.silent)
+            {
+                return;
+            }
+
             MyHost.Actions.AddChatText("[TreeStats] " + message, 1, 1);
         }
     }
