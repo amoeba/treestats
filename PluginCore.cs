@@ -162,8 +162,6 @@ namespace TreeStats
                     {
                         string command = tokens[1];
 
-                        Util.WriteToChat("Command is " + command);
-
                         if (command == "help")
                         {
                             Settings.ShowHelp();
