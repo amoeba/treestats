@@ -157,6 +157,7 @@ namespace TreeStats
 
                 if (text.StartsWith("@treestats") || text.StartsWith("/treestats"))
                 {
+                    e.Eat = true;
                     string[] tokens = text.Split(' ');
 
                     if (tokens.Length <= 1)
