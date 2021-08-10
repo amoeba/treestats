@@ -22,6 +22,8 @@ namespace TreeStats
                 string dir = setupPluginDir();
                 Logging.Init(dir + "\\messages.txt", dir + "\\errors.txt");
 
+                MigrateLegacyPluginDirLocation(dir);
+
                 MyHost = Host;
                 MyCore = Core;
 
@@ -250,6 +252,24 @@ namespace TreeStats
             catch (Exception ex)
             {
                 Logging.LogError(ex);
+            }
+        }
+
+        private void MigrateLegacyPluginDirLocation(string pluginDir)
+        {
+            string oldSettingsPath = Path + "\\settings.txt";
+            string currentSettingsPath = pluginDir + "\\settings.txt";
+
+            if (File.Exists(oldSettingsPath) && !File.Exists(currentSettingsPath))
+            {
+                try
+                {
+                    File.Copy(oldSettingsPath, currentSettingsPath);
+                }
+                catch (Exception ex)
+                {
+                    Logging.LogError(ex);
+                }
             }
         }
     }
