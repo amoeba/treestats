@@ -133,7 +133,7 @@ namespace TreeStats
             }
             else
             {
-                Settings.SetAutoMode(false); ;
+                Settings.SetAutoMode(false);
                 Settings.Save();
             }
         }
