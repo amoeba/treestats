@@ -177,6 +177,11 @@ namespace TreeStats
                             Settings.ToggleMode();
                             Settings.Save();
                         }
+                        else if (command == "loc")
+                        {
+                            Settings.ToggleLocation();
+                            Settings.Save();
+                        }
                         else if (command == "add")
                         {
                             Settings.AddCharacter(Core.CharacterFilter.Server + "-" + Core.CharacterFilter.Name);

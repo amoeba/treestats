@@ -5,6 +5,7 @@
       <page label="Update">
         <control progid="DecalControls.FixedLayout" clipped="">
           <control progid="DecalControls.CheckBox" name="chkAutoMode" left="10" top="10" width="180" height="25" text="Auto. Send All Characters" checked="false"/>
+          <control progid="DecalControls.CheckBox" name="chkSendLocation" left="10" top="10" width="180" height="25" text="Send Location" checked="false"/>
           <control progid="DecalControls.PushButton" name="btnSendUpdate" left="10" top="30" width="160" height="25" text="Manually Send Character" />
           <control progid="DecalControls.StaticText" name="txtWhitelist" left="10" top="70" width="180" height="25" text="Whitelist (Always Send):" />
           <control progid="DecalControls.PushButton" name="btnAddCharacter" left="10" top="90" width="120" height="25" text="Add Character" />

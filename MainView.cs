@@ -9,6 +9,7 @@ namespace TreeStats
         static MyClasses.MetaViewWrappers.IView View;
         static MyClasses.MetaViewWrappers.IButton btnSendUpdate;
         static MyClasses.MetaViewWrappers.ICheckBox chkAutoMode;
+        static MyClasses.MetaViewWrappers.ICheckBox chkSendLocation;
         static MyClasses.MetaViewWrappers.IButton btnAddCharacter;
         static MyClasses.MetaViewWrappers.IButton btnRemoveCharacter;
 
@@ -39,6 +40,9 @@ namespace TreeStats
 
             chkAutoMode = (MyClasses.MetaViewWrappers.ICheckBox)View["chkAutoMode"];
             chkAutoMode.Change += new EventHandler<MyClasses.MetaViewWrappers.MVCheckBoxChangeEventArgs>(chkAutoMode_Change);
+
+            chkSendLocation = (MyClasses.MetaViewWrappers.ICheckBox)View["chkSendLocation"];
+            chkSendLocation.Change += new EventHandler<MyClasses.MetaViewWrappers.MVCheckBoxChangeEventArgs>(chkSendLocation_Change);
 
             btnAddCharacter = (MyClasses.MetaViewWrappers.IButton)View["btnAddCharacter"];
             btnAddCharacter.Hit += new EventHandler(btnAddCharacter_Hit);
@@ -72,6 +76,11 @@ namespace TreeStats
             if (Settings.autoMode == true)
             {
                 chkAutoMode.Checked = true;
+            }
+
+            if (Settings.sendLocation == true)
+            {
+                chkSendLocation.Checked = true;
             }
 
             if (Settings.useAccount == true)
@@ -109,6 +118,7 @@ namespace TreeStats
         {
             btnSendUpdate = null;
             chkAutoMode = null;
+            chkSendLocation = null;
             btnAddCharacter = null;
             btnRemoveCharacter = null;
             btnSendUpdate = null;
@@ -134,6 +144,20 @@ namespace TreeStats
             else
             {
                 Settings.SetAutoMode(false); ;
+                Settings.Save();
+            }
+        }
+
+        static void chkSendLocation_Change(object sender, MyClasses.MetaViewWrappers.MVCheckBoxChangeEventArgs e)
+        {
+            if (e.Checked)
+            {
+                Settings.SetSendLocation(true);
+                Settings.Save();
+            }
+            else
+            {
+                Settings.SetSendLocation(false); ;
                 Settings.Save();
             }
         }

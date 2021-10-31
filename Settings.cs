@@ -15,6 +15,7 @@ namespace TreeStats
 
         // Tracked settings
         public static bool autoMode;
+        public static bool sendLocation;
         public static List<string> trackedCharacters;
         public static bool useAccount;
         public static string accountName;
@@ -31,6 +32,7 @@ namespace TreeStats
                 settingsFile = _settingsFileName;
 
                 autoMode = false;
+                sendLocation = false;
                 trackedCharacters = new List<string>();
                 useAccount = false;
                 accountName = "";
@@ -73,6 +75,9 @@ namespace TreeStats
 
                 // Write auto mode
                 sw.WriteLine("auto:" + autoMode.ToString());
+
+                // Write send location
+                sw.WriteLine("loc:" + sendLocation.ToString());
 
                 // Write account info if present
                 sw.WriteLine("use_account:" + useAccount.ToString());
@@ -149,6 +154,20 @@ namespace TreeStats
                             else if (tokens[1] == "False")
                             {
                                 autoMode = false;
+                            }
+
+                            break;
+                        case "loc": // Send location setting, True | False
+                            Logging.LogMessage("Reading location setting with stored value of " + tokens[1]);
+
+                            // Try to grab token[1] as a bool
+                            if (tokens[1] == "True")
+                            {
+                                sendLocation = true;
+                            }
+                            else if (tokens[1] == "False")
+                            {
+                                sendLocation = false;
                             }
 
                             break;
@@ -281,6 +300,27 @@ namespace TreeStats
             }
         }
 
+        internal static void SetSendLocation(bool state)
+        {
+            try
+            {
+                if (state == true)
+                {
+                    Util.WriteToChat("Setting location to visible. Character location will be uploaded.");
+                    sendLocation = true;
+                }
+                else
+                {
+                    Util.WriteToChat("Setting location to hidden. Character location will not be uploaded.");
+                    sendLocation = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
+            }
+        }
+
         internal static void ToggleMode()
         {
             try
@@ -292,6 +332,25 @@ namespace TreeStats
                 else
                 {
                     SetAutoMode(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.LogError(ex);
+            }
+        }
+
+        internal static void ToggleLocation()
+        {
+            try
+            {
+                if (sendLocation == true)
+                {
+                    SetSendLocation(false);
+                }
+                else
+                {
+                    SetSendLocation(true);
                 }
             }
             catch (Exception ex)
@@ -368,6 +427,7 @@ namespace TreeStats
                 Util.WriteToChat("mode: Toggle mode between automatic and manual tracking.");
                 Util.WriteToChat("     auto: Automatically upload characters.");
                 Util.WriteToChat("     manual: Only upload characters you manually add. See add/rem.");
+                Util.WriteToChat("loc: Toggle between sending or not sending character location.");
                 Util.WriteToChat("add: Enables tracking for the currently logged in character.");
                 Util.WriteToChat("rem: Removes tracking for the currently logged in character.");
                 Util.WriteToChat("account: Create or log into an account.");
