@@ -317,6 +317,12 @@ namespace TreeStats
                 req.AppendFormat("\"total_xp\":{0},", cf.TotalXP);
                 req.AppendFormat("\"unassigned_xp\":{0},", cf.UnassignedXP);
                 req.AppendFormat("\"skill_credits\":{0},", cf.SkillPoints);
+
+                if (Settings.sendLocation)
+                {
+                    req.AppendFormat("\"location\":{0},", GetLocation());  
+                }
+
                 //req.AppendFormat("\"age\":{0},", cf.Age);
 
                 // Luminance XP
@@ -754,6 +760,20 @@ namespace TreeStats
             {
                 Logging.LogError(ex);
             }
+        }
+
+        internal static string GetLocation()
+        {
+            Decal.Adapter.Wrappers.CharacterFilter cf = MyCore.CharacterFilter;
+            var coords = MyCore.WorldFilter.GetByName(cf.Name).First.Coordinates();
+
+            if ( coords == null ) // Indoors?
+                return "";
+
+            string northSouth = $"{Math.Abs(coords.NorthSouth).ToString("F2")}{(coords.NorthSouth >= 0 ? "N" : "S")}";
+            string eastWest = $"{Math.Abs(coords.EastWest).ToString("F2")}{(coords.EastWest >= 0 ? "E" : "W")}";
+                    
+            return $"{northSouth},{eastWest}";
         }
     }
 }
