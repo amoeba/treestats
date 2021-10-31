@@ -287,11 +287,11 @@ namespace TreeStats
             {
                 if (autoMode == true)
                 {
-                    SetAutoMode(true);
+                    SetAutoMode(false);
                 }
                 else
                 {
-                    SetAutoMode(false);
+                    SetAutoMode(true);
                 }
             }
             catch (Exception ex)
