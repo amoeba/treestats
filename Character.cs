@@ -320,7 +320,7 @@ namespace TreeStats
 
                 if (Settings.sendLocation)
                 {
-                    req.AppendFormat("\"location\":{0},", GetLocation());  
+                    req.AppendFormat("\"location\":\"{0}\",", new Location(MyHost.Actions.Landcell, MyHost.Actions.LocationX, MyHost.Actions.LocationY).ToString());  
                 }
 
                 //req.AppendFormat("\"age\":{0},", cf.Age);
@@ -760,20 +760,6 @@ namespace TreeStats
             {
                 Logging.LogError(ex);
             }
-        }
-
-        internal static string GetLocation()
-        {
-            Decal.Adapter.Wrappers.CharacterFilter cf = MyCore.CharacterFilter;
-            var coords = MyCore.WorldFilter.GetByName(cf.Name).First.Coordinates();
-
-            if ( coords == null ) // Indoors?
-                return "";
-
-            string northSouth = $"{Math.Abs(coords.NorthSouth).ToString("F2")}{(coords.NorthSouth >= 0 ? "N" : "S")}";
-            string eastWest = $"{Math.Abs(coords.EastWest).ToString("F2")}{(coords.EastWest >= 0 ? "E" : "W")}";
-                    
-            return $"{northSouth},{eastWest}";
         }
     }
 }

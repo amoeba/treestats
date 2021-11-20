@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="Account.cs" />
     <Compile Include="Character.cs" />
+    <Compile Include="Coordinate.cs" />
     <Compile Include="Encryption.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="MainView.cs" />
