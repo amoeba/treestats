@@ -400,6 +400,34 @@ namespace TreeStats
                 req.Remove(req.Length - 1, 1);
                 req.Append("},");
 
+                // Components
+
+                string components_format = "\"{0}\":{{\"name\":\"{1}\",\"count\":{2}},";
+                req.Append("\"components\":{");
+
+                var componentNamesByKey = new Dictionary<string, string>
+                {
+                    { "lead", "Lead Scarab"},
+                    { "iron", "Iron Scarab"},
+                    { "copper", "Copper Scarab"},
+                    { "silver", "Silver Scarab"},
+                    { "gold", "Gold Scarab"},
+                    { "pyreal", "Pyreal Scarab"},
+                    { "platinum", "Platinum Scarab"},
+                    { "diamond", "Diamond Scarab"},
+                    { "mana", "Mana Scarab"},
+                    { "dark", "Dark Scarab"},
+                    { "prismatic", "Prismatic Taper"}
+                };
+
+                foreach (var (key, name) in componentNamesByKey)
+                {
+                    int count = GetItemInventoryCount(name);
+                    req.AppendFormat(components_format, key, name, count.ToString());
+                }
+                req.Remove(req.Length - 1, 1);
+                req.Append("},");
+
 
                 // Monarch & Patron Information
                 // We wrap in try/catch because AllegianceInfoWrapper behaves oddly (Is not null when it should be? Not sure on this.)
@@ -500,6 +528,54 @@ namespace TreeStats
             {
                 Logging.LogError(ex);
             }
+        }
+
+        internal static int GetItemInventoryCount(string itemName)
+        {
+            List<int> packList = new List<int>();
+            int tmpCount = 0;
+            foreach (WorldObject worldObject in MyCore.WorldFilter.GetByContainer(MyCore.CharacterFilter.Id))
+            {
+                if (itemName.Equals(worldObject.Name, StringComparison.Ordinal))
+                {
+                    if (worldObject.Values(LongValueKey.StackCount) > 1)
+                    {
+                        tmpCount += worldObject.Values(LongValueKey.StackCount);
+                    }
+                    else
+                    {
+                        tmpCount = tmpCount + 1;
+                    }
+                }
+                if (worldObject.Category == 512)
+                {
+                    packList.Add(worldObject.Id);
+                }
+
+            }
+
+            if (packList.Count > 0)
+            {
+                foreach (int packID in packList)
+                {
+                    foreach (WorldObject worldObject in MyCore.WorldFilter.GetByContainer(packID))
+                    {
+                        if (itemName.Equals(worldObject.Name, StringComparison.Ordinal))
+                        {
+                            if (worldObject.Values(LongValueKey.StackCount) > 1)
+                            {
+                                tmpCount += worldObject.Values(LongValueKey.StackCount);
+                            }
+                            else
+                            {
+                                tmpCount = tmpCount + 1;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return (tmpCount);
         }
 
         internal static void SendCharacterInfo(string message)
